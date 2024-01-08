@@ -1,0 +1,933 @@
+@font-face {
+    font-family: Manrope;
+    src: url(fonts/Manrope-Regular.ttf);
+}
+
+:root {
+    --white: #FFF;
+}
+
+*,
+*::before,
+*::after {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Manrope, sans-serif;
+}
+
+img {
+    width: 100%;
+}
+
+a {
+    text-decoration: none;
+}
+
+.main-page {
+    padding: 1.7rem 0 2rem;
+    width: 100%;
+    min-height: 100vh;
+    overflow: hidden;
+    background-color: var(--white);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+header {
+    position: relative;
+    z-index: 60;
+    color: #182327;
+    text-align: center;
+    font-family: Manrope;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 28px;
+}
+
+.container {
+    position: relative;
+    max-width: 81rem;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 3rem;
+    z-index: 10;
+}
+
+
+
+.overlay {
+    display: none;
+}
+
+
+header .container {
+    height: 112px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+
+.logo img {
+    width: 40px;
+    height: 38px;
+}
+
+.links ul {
+    display: flex;
+    align-items: center;
+    list-style: none;
+}
+
+.links a {
+    display: inline-block;
+    color: #182327;
+    text-align: center;
+    font-family: Manrope;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 28px;
+    margin-left: 42px;
+    transition: 0.3s;
+}
+
+.links a:hover {
+    transform: scale(1.05);
+}
+
+.search {
+    margin-left: 42px;
+}
+
+.search .search-bar {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 330px;
+    height: 52px;
+    background: var(--white);
+    border-radius: 8px;
+    border: 1px solid #D8E0E2;
+    transition: 0.5s;
+}
+
+.search-icon {
+    width: 19px;
+    height: 19px;
+    flex-shrink: 0;
+    stroke-width: 1.5px;
+    stroke: #182327;
+    margin: 1rem;
+    transition: 1s;
+}
+
+.search-icon:hover {
+    transform: scale(1.3);
+}
+
+.search-input {
+    position: relative;
+    width: 250px;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.search-input input {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    color: #5D696D;
+    font-family: Manrope;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 24px;
+    border: none;
+    outLine: none;
+}
+
+.profile {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.profile a {
+    margin-left: 22px;
+}
+
+.btn {
+    display: inline-block;
+    color: var(--white);
+    background-color: #182327;
+    text-transform: capitalize;
+    transition: 0.3s;
+}
+
+.btn:hover {
+    transform: scale(1.05) !important;
+}
+
+.profile a:nth-child(1) {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+}
+
+.profile a:nth-child(2) {
+    font-weight: 600;
+    width: 107px;
+    height: 52px;
+    padding: 12px 24px;
+    border-radius: 8px;
+}
+
+.hamburger-menu {
+    position: relative;
+    z-index: 99;
+    width: 18px;
+    height: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    display: none;
+
+}
+
+.hamburger-menu .bar {
+    position: relative;
+    width: 100%;
+    height: 2px;
+    background-color: #182327;
+    border-radius: 2px;
+    transition: 0.5s;
+}
+
+.bar::before,
+.bar::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #182327;
+    border-radius: 2px;
+    transition: 0.5s;
+}
+
+.bar::before {
+    transform: translate(-9px, -8px);
+}
+
+.bar::after {
+    transform: translate(-9px, 8px);
+
+}
+
+.main-page.active .hamburger-menu .bar {
+    background-color: transparent;
+}
+
+.main-page.active .bar::before {
+    transform: translateY(0) rotate(-45deg);
+}
+
+.main-page.active .bar::after {
+    transform: translateY(0) rotate(45deg);
+}
+
+/*  */
+.showcase-area .commercial {
+    padding: 50px 135px;
+    background: linear-gradient(180deg, #02B5EA 0%, rgba(2, 181, 234, 0.15) 100%);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    justify-content: center;
+}
+
+.big-title h1 {
+    max-width: 600px;
+    color: #182327;
+    font-family: Manrope;
+    font-size: 70px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 76px;
+}
+
+.big-title img {
+    width: 73px;
+    height: 54px;
+}
+
+.text {
+    color: #182327;
+    font-family: Manrope;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 32px;
+    margin: 1.9rem 0 2.5rem;
+    max-width: 600px;
+}
+
+.cta .btn {
+    width: 152px;
+    height: 60px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Manrope;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 30px;
+}
+
+.snack {
+    position: relative;
+    width: 496px;
+    height: 568px;
+}
+
+#bigLaysSnack {
+    position: absolute;
+    z-index: 10;
+    width: 496px;
+    height: 568px;
+}
+
+#liquid {
+    position: absolute;
+    z-index: 9;
+    width: 200px;
+    height: 190px;
+    top: -10px;
+    right: -85px;
+}
+
+#potatoChips {
+    position: absolute;
+    z-index: 9;
+    width: 435px;
+    height: 346px;
+    bottom: 30px;
+    left: -30px;
+}
+
+#potatoChipsSmall {
+    position: absolute;
+    z-index: 11;
+    width: 120px;
+    height: 54px;
+    bottom: 175px;
+    left: 305px;
+}
+
+#smallPotatoChips {
+    position: absolute;
+    z-index: 11;
+    width: 120px;
+    height: 120px;
+    top: 50px;
+    left: 65px;
+}
+
+.commercial .right {
+    margin-left: 2rem;
+}
+
+.recommendation .container {
+    position: relative;
+}
+
+.recommendation .container h1 {
+    width: 570px;
+    font-size: 42px;
+    font-weight: 700;
+    line-height: 46px;
+    margin: 150px 0;
+}
+
+.recommendation .container #smallPotatoChipsSmall {
+    position: absolute;
+    z-index: 12;
+    width: 333px;
+    height: 145px;
+    top: 90px;
+    right: 0px;
+}
+
+.recommendation .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    justify-content: center;
+}
+
+.recommendation .row .right {
+    margin-left: 130px;
+}
+
+.recommendation .row .right h2 {
+    font-size: 22px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 26px;
+}
+
+.recommendation .row .right .price {
+    color: #5D696D;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 28px;
+
+}
+
+.recommendation .row .right .text {
+    color: #5D696D;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 28px;
+    width: 470px;
+}
+
+.recommendation .row .right #stars {
+    width: 114px;
+    height: 18px;
+}
+
+.recommendation .group-btn {
+    display: flex;
+    align-items: center;
+}
+
+.recommendation .btn {
+    width: 146px;
+    height: 60px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 28px;
+}
+
+.recommendation #seeMore {
+    color: #182327;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 30px;
+}
+
+.recommendation .row .right>*:not(:first-child) {
+    margin-top: 10px;
+}
+
+.recommended-snack {
+    position: relative;
+    width: 570px;
+    height: 484px;
+}
+
+#intersectPink {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 570px;
+    height: 484px;
+    border-radius: 7px;
+    background: #FFE9F4
+}
+
+#recommendedSnack {
+    position: absolute;
+    width: 372px;
+    height: 484px;
+    z-index: 10;
+    top: -80px;
+    left: 99px;
+}
+
+#hamburger {
+    position: absolute;
+    width: 233px;
+    height: 220px;
+    z-index: 11;
+    top: 130px;
+}
+
+.best-taste {
+    margin-top: 150px;
+}
+
+.best-taste .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.best-taste .container .best-taste-title {
+    width: 570px;
+    color: #182327;
+    text-align: center;
+    font-size: 42px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 46px;
+    margin-bottom: 18px;
+}
+
+.best-taste .container .best-taste-text {
+    width: 570px;
+    color: #5D696D;
+    text-align: center;
+    font-family: Manrope;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 30px;
+    margin-bottom: 140px;
+}
+
+.grid-snack {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+}
+
+.grid-snack .snack-illustate {
+    position: relative;
+    width: 370px;
+    height: 330px;
+}
+
+.grid-snack .snack-herb img:nth-child(1) {
+    background-color: #F8FFE3;
+}
+
+.grid-snack .snack-wavy img:nth-child(1) {
+    background-color: #FFE3E4;
+}
+
+.grid-snack .snack-classic img:nth-child(1) {
+    background-color: #FFFBD6;
+}
+
+.grid-snack .snack-cream img:nth-child(1) {
+    background-color: #FFEFE3;
+}
+
+.grid-snack .snack-vinegar img:nth-child(1) {
+    background-color: #DDF6FF;
+}
+
+.grid-snack .snack-onion img:nth-child(1) {
+    background-color: #E3FFF3;
+}
+
+.grid-snack .snack-illustate img:nth-child(1) {
+    width: 370px;
+    height: 330px;
+    border-radius: 12px;
+}
+
+.grid-snack .snack-illustate img:nth-child(2) {
+    position: absolute;
+    width: 300px;
+    height: 330px;
+    top: -70px;
+    left: 32px;
+    border-radius: 12px;
+}
+
+.grid-snack .snack-illustate .btn {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 50px;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    bottom: -27px;
+    right: 28px;
+}
+
+.grid-snack .snack-info {
+    margin-bottom: 130px;
+}
+
+.grid-snack .snack-info .price {
+    margin-top: 20px;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 32px;
+}
+
+.grid-snack .snack-info .snack-name {
+    color: #5D696D;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 28px;
+    margin: 8px 0px;
+}
+
+.grid-snack .snack-info img {
+    width: 106px;
+    height: 18px;
+}
+
+.grid-snack .snack-wavy {
+    margin-left: 30px;
+    margin-right: 30px;
+}
+
+.grid-snack .snack-vinegar {
+    margin-left: 30px;
+    margin-right: 30px;
+}
+
+.popular-crisps {
+    margin-top: 150px;
+}
+
+.popular-crisps .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.popular-crisps .container .popular-crisps-title-container {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.popular-crisps .container .popular-crisps-title {
+    width: 570px;
+    font-size: 42px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 46px;
+    text-align: left;
+}
+
+.popular-crisps .container .row {
+    display: flex;
+    justify-content: center;
+    align-items: end;
+}
+
+#intersectSalt {
+    width: 570px;
+    height: 484px;
+    background: #EAFFFC;
+    border-radius: 16px;
+}
+
+#intersectBeer {
+    width: 570px;
+    height: 384px;
+    background: #FFEAEC;
+    border-radius: 12px;
+}
+
+.popular-crisps .container .row .snack-illustate {
+    position: relative;
+}
+
+.popular-crisps .container .row .left {
+    margin-right: 30px;
+}
+
+.popular-crisps .container .row .left .snack-illustate {
+    width: 570px;
+    height: 484px;
+}
+
+.popular-crisps .container .row .right .snack-illustate {
+    width: 570px;
+    height: 384px;
+}
+
+.popular-crisps .container .row .left .snack-illustate #snackSalt {
+    position: absolute;
+    width: 324px;
+    height: 484px;
+    top: -80px;
+    left: 123px;
+}
+
+
+.popular-crisps .container .row .right .snack-illustate #snackBeer {
+    position: absolute;
+    width: 293px;
+    height: 384px;
+    top: -70px;
+    left: 138px;
+}
+
+.popular-crisps .container .row .snack-info .snack-name {
+    margin-top: 20px;
+    margin-bottom: 14px;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 32px;
+}
+
+.popular-crisps .container .row .snack-info .play-container {
+    display: flex;
+    align-items: center;
+}
+
+.popular-crisps .container .row .snack-info .btn {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-image: url(img/play_icon.png);
+}
+
+.popular-crisps .container .row .snack-info .play-title {
+    color: #5D696D;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 28px;
+    margin-left: 10px;
+}
+
+footer {
+    background-color: #FFF7E3;
+    padding: 100px 135px 64px;
+}
+
+
+@media screen and (max-width: 1024px) {
+
+    .search {
+        display: none;
+    }
+
+    .profile {
+        display: none;
+    }
+
+    .hamburger-menu {
+        display: flex;
+    }
+
+    .links {
+        position: fixed;
+        top: 0;
+        right: 0;
+        max-width: 450px;
+        height: 100%;
+        width: 100%;
+        background-color: #64bcf4;
+        z-index: 95;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transform: translateX(100%);
+        transition: 0.5s;
+    }
+
+    .links ul {
+        flex-direction: column;
+    }
+
+    .links a {
+        color: #fff;
+        margin-left: 0;
+        padding: 2rem 0;
+    }
+
+    .links .btn {
+        background: none;
+    }
+
+    .overlay {
+        display: block;
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background-color: rgba(0, 0, 0, 0.7);
+        opacity: 0;
+        pointer-events: none;
+        transition: 0.5s;
+
+    }
+
+    .main-page.active .links {
+        transform: translateX(0);
+        box-shadow: 0 0 50px 2px rgb(0, 0, 0, 0.4);
+    }
+
+    .main-page.active .overlay {
+        pointer-events: all;
+        opacity: 1;
+    }
+
+    .main-page {
+        padding-top: 0px;
+    }
+
+    header .container {
+        height: 62px;
+        margin-top: 0;
+    }
+
+    .showcase-area {
+        padding: 0 0 2.5rem 0;
+        max-width: 1024px;
+        margin: 0;
+    }
+
+
+    .showcase-area .commercial {
+        width: 100%;
+        grid-template-columns: 1fr;
+        display: flex;
+        justify-content: center;
+        flex-direction: column-reverse;
+        grid-gap: 2rem;
+        padding: 55px 18px;
+        height: auto;
+    }
+
+    .commercial .right,
+    .commercial .left {
+        flex: 1;
+    }
+
+    .showcase-area .commercial .left h1 {
+        font-size: 40px;
+        font-weight: 700;
+        line-height: 115%;
+    }
+
+    .showcase-area .commercial .left .text {
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 24px;
+    }
+
+    .showcase-area .commercial .right {
+        padding: 50px 50px;
+        transform: scale(0.52);
+    }
+
+    .recommendation .container h1 {
+        width: 339px;
+        font-size: 26px;
+        font-weight: 700;
+        line-height: 30px;
+        margin: 100px 0px;
+    }
+
+    .recommendation .container #smallPotatoChipsSmall {
+        position: absolute;
+        z-index: 12;
+        width: 75px;
+        height: 33px;
+        top: 90px;
+        right: 0px;
+    }
+
+    .recommendation .row {
+        width: 100%;
+        grid-template-columns: 1fr;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        grid-gap: 2rem;
+        padding: 0;
+    }
+
+    .recommendation .row .right {
+        margin: 0px;
+    }
+
+    .recommendation .row .right .text {
+        font-size: 14px;
+        width: 340px;
+    }
+
+    .recommended-snack {
+        transform: scale(0.6);
+    }
+
+    .best-taste {
+        margin-top: 100px;
+    }
+
+    .best-taste .container .best-taste-title {
+        width: 339px;
+        font-size: 26px;
+        font-weight: 700;
+        line-height: 30px;
+        margin-bottom: 12px;
+    }
+
+    .best-taste .container .best-taste-text {
+        width: 339px;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 24px;
+        margin-bottom: 108px;
+    }
+
+    .best-taste .container .grid-snack {
+        width: 100%;
+        grid-template-rows: 1fr;
+        grid-template-columns: 1fr;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        grid-gap: 2rem;
+        padding: 0;
+    }
+
+    .best-taste .container .grid-snack .snack-illustate-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transform: scale(0.9);
+    }
+
+    .grid-snack .snack-info {
+        margin-bottom: 108px;
+    }
+
+    .best-taste .container .grid-snack .snack-onion .snack-info {
+        margin-bottom: 38px;
+    }
+
+
+}
