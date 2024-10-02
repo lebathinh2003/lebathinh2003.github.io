@@ -1,14 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Board Game Hint Page</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container mt-5">
+      <!-- Main Card -->
+      <div class="card">
+        <div class="card-body">
+          <!-- Hint Container -->
+          <div id="hint-container" class="mb-4">
+            <h3>Hint</h3>
+            <p id="hint-text" class="lead">
+              Here is the hint text for the card.
+            </p>
+          </div>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
+          <!-- Button to Show Answer -->
+          <button
+            id="show-answer-btn"
+            class="btn btn-primary"
+            onclick="toggleAnswer()"
+          >
+            Show Answer
+          </button>
 
-<body>
-    <h1>day la landing page</h1>
-</body>
+          <!-- Answer Container (hidden initially) -->
+          <div id="answer-container" class="mt-4" style="display: none">
+            <h3>Answer</h3>
+            <p id="answer-text" class="lead">
+              This is the answer text that will be revealed.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
 
+    <!-- Bootstrap JS (optional, if you need interactivity) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      function toggleAnswer() {
+        const answerContainer = document.getElementById("answer-container");
+        const answerButton = document.getElementById("show-answer-btn");
+
+        // Toggle visibility of the answer container
+        if (
+          answerContainer.style.display === "none" ||
+          answerContainer.style.display === ""
+        ) {
+          answerContainer.style.display = "block"; // Show the answer
+          answerButton.innerText = "Hide Answer"; // Change button text
+        } else {
+          answerContainer.style.display = "none"; // Hide the answer
+          answerButton.innerText = "Show Answer"; // Revert button text
+        }
+      }
+    </script>
+  </body>
 </html>
