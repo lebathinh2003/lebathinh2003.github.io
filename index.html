@@ -1,68 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Board Game Hint Page</title>
-    <!-- Bootstrap CSS -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <div class="container mt-5">
-      <!-- Main Card -->
-      <div class="card">
-        <div class="card-body">
-          <!-- Hint Container -->
-          <div id="hint-container" class="mb-4">
-            <h3>Hint</h3>
-            <p id="hint-text" class="lead">
-              Here is the hint text for the card.
-            </p>
-          </div>
 
-          <!-- Button to Show Answer -->
-          <button
-            id="show-answer-btn"
-            class="btn btn-primary"
-            onclick="toggleAnswer()"
-          >
-            Show Answer
-          </button>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Landing Page</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
 
-          <!-- Answer Container (hidden initially) -->
-          <div id="answer-container" class="mt-4" style="display: none">
-            <h3>Answer</h3>
-            <p id="answer-text" class="lead">
-              This is the answer text that will be revealed.
-            </p>
-          </div>
+<body>
+
+    <h1>Hừng Đông Cách Mạng</h1>
+
+    <div id="section1" class="section-container">
+        <h2 class="section-title">Section 1</h2>
+        <div class="hint-container">
+            <p class="hint">Đây là nội dung của hint 1 trong Section 1.</p>
+            <p class="hint">Đây là nội dung của hint 2 trong Section 1.</p>
         </div>
-      </div>
+        <button class="btn btn-dropdown">Hiện đáp án</button>
+        <div class="answer-container">
+            <p>Đây là đáp án của Section 1.</p>
+            <img class="answer-img"
+                src="https://res.cloudinary.com/dhphzuojz/image/upload/v1721117476/file_storage/f79989ff-f1df-4b57-bbc1-28784adbbce4.png">
+        </div>
     </div>
 
-    <!-- Bootstrap JS (optional, if you need interactivity) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <div id="section2" class="section-container">
+        <h2 class="section-title">Section 2</h2>
+        <div class="hint-container">
+            <p class="hint">Đây là nội dung của hint 1 trong Section 2.</p>
+            <p class="hint">Đây là nội dung của hint 2 trong Section 2.</p>
+        </div>
+        <button class="btn btn-dropdown">Hiện đáp án</button>
+        <div class="answer-container">
+            <p>Đây là đáp án của Section 2.</p>
+            <img class="answer-img"
+                src="https://res.cloudinary.com/dhphzuojz/image/upload/v1721117476/file_storage/f79989ff-f1df-4b57-bbc1-28784adbbce4.png">
+        </div>
+    </div>
 
-    <script>
-      function toggleAnswer() {
-        const answerContainer = document.getElementById("answer-container");
-        const answerButton = document.getElementById("show-answer-btn");
+    <!-- Tạo thêm các section khác tương tự -->
+    <div id="section3" class="section-container">
+        <h2 class="section-title">Section 3</h2>
+        <div class="hint-container">
+            <p class="hint">Đây là nội dung của hint 1 trong Section 3.</p>
+            <p class="hint">Đây là nội dung của hint 2 trong Section 3.</p>
+        </div>
+        <button class="btn btn-dropdown">Hiện đáp án</button>
+        <div class="answer-container">
+            <p>Đây là đáp án của Section 3.</p>
+            <img class="answer-img"
+                src="https://res.cloudinary.com/dhphzuojz/image/upload/v1721117476/file_storage/f79989ff-f1df-4b57-bbc1-28784adbbce4.png">
+        </div>
+    </div>
 
-        // Toggle visibility of the answer container
-        if (
-          answerContainer.style.display === "none" ||
-          answerContainer.style.display === ""
-        ) {
-          answerContainer.style.display = "block"; // Show the answer
-          answerButton.innerText = "Hide Answer"; // Change button text
-        } else {
-          answerContainer.style.display = "none"; // Hide the answer
-          answerButton.innerText = "Show Answer"; // Revert button text
-        }
-      }
-    </script>
-  </body>
+    <!-- Tiếp tục cho đến section 10 -->
+
+    <script src="js/main.js"></script>
+
+</body>
+
 </html>
