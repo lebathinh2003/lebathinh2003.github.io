@@ -1,100 +1,110 @@
 /* Reset some default browser styles */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 /* Base styles */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #fff5e1;
-    color: #333;
-    padding: 20px;
-    text-align: center;
+  font-family: Arial, sans-serif;
+  background-color: #fff5e1;
+  color: #333;
+  padding: 20px;
+  text-align: center;
 }
 
 /* Typography */
 h1 {
-    color: #b22222;
-    font-size: 2.5rem;
-    margin-bottom: 20px;
+  color: #b22222;
+  font-size: 2.5rem;
+  margin-bottom: 20px;
 }
 
 /* Section container */
 .section-container {
-    display: none; /* Mặc định ẩn đi */
-    background-color: #f9d71c;
-    padding: 20px;
-    border: 2px solid #b22222;
-    border-radius: 10px;
-    margin-bottom: 20px;
+  display: none; /* Mặc định ẩn đi */
+  background-color: #f9d71c;
+  padding: 20px;
+  border: 2px solid #b22222;
+  border-radius: 10px;
+  margin-bottom: 20px;
 }
 
 .section-title {
-    color: #b22222;
-    font-size: 1.8rem;
-    margin-bottom: 10px;
+  color: #b22222;
+  font-size: 1.8rem;
+  margin-bottom: 10px;
 }
 
 /* Hint container */
 .hint-container {
-    background-color: #fff5e1;
-    border-left: 4px solid #b22222;
-    padding: 10px;
-    margin-bottom: 15px;
+  background-color: #fff5e1;
+  border-left: 4px solid #b22222;
+  padding: 10px;
+  margin-bottom: 15px;
 }
 
 .hint {
-    font-size: 1rem;
-    color: #333;
+  font-size: 1rem;
+  color: #333;
 }
 
 /* Button styles */
 .btn {
-    background-color: #b22222;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    font-size: 1rem;
-    cursor: pointer;
-    border-radius: 5px;
+  background-color: #b22222;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 5px;
 }
 
 .btn:hover {
-    background-color: #8b0000;
+  background-color: #8b0000;
 }
 
 /* Answer container */
 .answer-container {
-    display: none; /* Mặc định ẩn đi */
-    margin-top: 15px;
+  display: none; /* Mặc định ẩn đi */
+  margin-top: 15px;
 }
 
 .answer-container p {
-    font-size: 1rem;
-    margin-bottom: 10px;
+  font-size: 1rem;
+  margin-bottom: 10px;
 }
 
 .answer-img {
-    max-width: 100%;
-    height: auto;
-    border: 2px solid #b22222;
-    border-radius: 5px;
+  max-width: 100%;
+  height: auto;
+  border: 2px solid #b22222;
+  border-radius: 5px;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.section-container {
+  width: 480px;
 }
 
 /* Responsive design */
-@media (max-width: 768px) {
-    h1 {
-        font-size: 2rem;
-    }
+@media (nax-width: 768px) {
+  h1 {
+    font-size: 2rem;
+  }
 
-    .section-title {
-        font-size: 1.5rem;
-    }
+  .section-title {
+    font-size: 1.5rem;
+  }
 
-    .btn {
-        font-size: 0.9rem;
-        padding: 8px 16px;
-    }
+  .btn {
+    font-size: 0.9rem;
+    padding: 8px 16px;
+  }
 }
