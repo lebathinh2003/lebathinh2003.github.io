@@ -5,11 +5,19 @@
   box-sizing: border-box;
 }
 
+:root {
+  --primary-color: #FFC100;
+  --danger-color: #C40C0C;
+  --danger-color-hover: #800000;
+  --secondary-color: #fff5e1;
+  --dark-color: #343131;
+}
+
 /* Base styles */
 body {
   font-family: Arial, sans-serif;
-  background-color: #fff5e1;
-  color: #333;
+  background-color: var(--secondary-color);
+  color: var(--danger-color);
   padding: 20px;
   text-align: center;
   background-repeat: no-repeat;
@@ -18,44 +26,45 @@ body {
 }
 /* Typography */
 h1 {
-  color: #b22222;
+  color: var(--primary-color);
   font-size: 2.5rem;
   margin-bottom: 20px;
 }
 
 /* Section container */
 .section-container {
-  display: none; /* Mặc định ẩn đi */
-  background-color: #f9d71c;
+  height: auto;
+  display: none;
+  background-color: var(--primary-color);
   padding: 20px;
-  border: 2px solid #b22222;
+  border: 2px solid var(--danger-color);
   border-radius: 10px;
   margin-bottom: 20px;
+  transition: max-height 0.5s ease;
 }
 
 .section-title {
-  color: #b22222;
+  color: var(--second-color);
   font-size: 1.8rem;
   margin-bottom: 10px;
+  overflow: hidden; 
 }
 
-/* Hint container */
 .hint-container {
-  background-color: #fff5e1;
-  border-left: 4px solid #b22222;
+  background-color: var(--secondary-color);
+  border-left: 4px solid var(--danger-color);
   padding: 10px;
   margin-bottom: 15px;
 }
 
 .hint {
   font-size: 1rem;
-  color: #333;
+  color: var(--dark-color);
 }
 
-/* Button styles */
 .btn {
-  background-color: #b22222;
-  color: white;
+  background-color: var(--danger-color);
+  color: var(--secondary-color);
   border: none;
   padding: 10px 20px;
   font-size: 1rem;
@@ -64,24 +73,38 @@ h1 {
 }
 
 .btn:hover {
-  background-color: #8b0000;
+  background-color: var(--danger-color-hover);
 }
 
-/* Answer container */
 .answer-container {
-  display: none; /* Mặc định ẩn đi */
+  /* display: none;
   margin-top: 15px;
+  transition:2s ease;  */
+  max-height: 0; 
+  opacity: 0; 
+  visibility: hidden; 
+  transition: max-height 0.5s ease, opacity 0.5s ease, visibility 0.5s ease;
 }
+
+.answer-container.show {
+  /* display: block; */
+  max-height: 500px;
+  visibility: visible;
+  opacity: 1;
+}
+
 
 .answer-container p {
   font-size: 1rem;
   margin-bottom: 10px;
+  color: var(--dark-color);
 }
 
 .answer-img {
-  max-width: 100%;
+  width: 100%;
   height: auto;
-  border: 2px solid #b22222;
+  object-fit: cover;
+  border: 2px solid var(--danger-color-hover);
   border-radius: 5px;
 }
 
@@ -93,22 +116,18 @@ h1 {
 
 .container::before {
   content: "";
-  background-color: aqua;
   width: 100px;
   height: 100px;
   position: absolute;
-  background-image: url("https://res.cloudinary.com/dw5wzp49b/image/upload/v1727878810/w16fww3uxkd25m48jyqh.jpg");
   top: 0;
   left: 0;
 }
 
 .container::after {
   content: "";
-  background-color: aqua;
   width: 100px;
   height: 100px;
   position: absolute;
-  background-image: url("https://res.cloudinary.com/dw5wzp49b/image/upload/v1727878810/w16fww3uxkd25m48jyqh.jpg");
   top: 0;
   right: 0;
 }

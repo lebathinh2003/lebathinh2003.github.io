@@ -12,15 +12,29 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Toggle answer visibility
+    // document.querySelectorAll('.btn-dropdown').forEach(button => {
+    //     button.addEventListener('click', function () {
+    //         const answerContainer = this.nextElementSibling;
+    //         if (answerContainer.style.display === 'none' || !answerContainer.style.display) {
+    //             answerContainer.style.display = 'block';
+    //             this.textContent = 'Ẩn đáp án';
+    //         } else {
+    //             answerContainer.style.display = 'none';
+    //             this.textContent = 'Hiện đáp án';
+    //         }
+    //     });
+    // });
+    // Toggle answer visibility with animation
     document.querySelectorAll('.btn-dropdown').forEach(button => {
         button.addEventListener('click', function () {
             const answerContainer = this.nextElementSibling;
-            if (answerContainer.style.display === 'none' || !answerContainer.style.display) {
-                answerContainer.style.display = 'block';
-                this.textContent = 'Ẩn đáp án';
-            } else {
-                answerContainer.style.display = 'none';
+
+            if (answerContainer.classList.contains('show')) {
+                answerContainer.classList.remove('show');
                 this.textContent = 'Hiện đáp án';
+            } else {
+                answerContainer.classList.add('show');
+                this.textContent = 'Ẩn đáp án';
             }
         });
     });
