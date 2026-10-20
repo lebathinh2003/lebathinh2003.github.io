@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main  # Hoặc 'master' tùy thuộc vào tên nhánh chính của bạn
+      - main
 
 permissions:
   contents: read
@@ -24,9 +24,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Replace API Key in index.html
+      - name: Debug & Replace API Key
         run: |
+          echo "=== KIỂM TRA TRƯỚC KHI THAY THẾ ==="
+          if grep -q "__OPENAI_API_KEY__" index.html; then
+            echo "Đã tìm thấy placeholder __OPENAI_API_KEY__ trong index.html"
+          else
+            echo "CẢNH BÁO: Không tìm thấy chuỗi __OPENAI_API_KEY__ trong index.html! Hãy kiểm tra lại file."
+          fi
+
+          # Thực hiện thay thế API Key từ Secret
           sed -i "s|__OPENAI_API_KEY__|${{ secrets.OPENAI_API_KEY }}|g" index.html
+
+          echo "=== KIỂM TRA SAU KHI THAY THẾ (Git Diff) ==="
+          # Lệnh này sẽ hiển thị thay đổi trên file (GitHub tự động ẩn Secret bằng *** nên rất an toàn)
+          git diff index.html
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
