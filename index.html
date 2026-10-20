@@ -1,678 +1,472 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Landing Page</title>
-  <link rel="stylesheet" href="css/style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quét Phiếu Khảo Sát AI</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .excel-scroll::-webkit-scrollbar { height: 6px; }
+        .excel-scroll::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 3px; }
+        .dragging { opacity: 0.5; scale: 0.98; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+    </style>
 </head>
+<body class="bg-gray-100 font-sans text-gray-800 antialiased">
 
-<body>
-  <h1 class="title">Hừng Đông Cách Mạng</h1>
+    <div class="max-w-md mx-auto min-h-screen bg-white flex flex-col shadow-xl">
+        
+        <header class="bg-blue-600 text-white p-4 sticky top-0 z-20 shadow-md">
+            <h1 class="text-lg font-bold text-center">Quét Phiếu Khảo Sát AI</h1>
+            <p class="text-xs text-blue-100 text-center mt-0.5">Tự động kết nối Google Sheets & GPT-4o</p>
+        </header>
 
-  <div class="container">
-    <div id="section1" class="section-container">
-      <h2 class="section-title">Sự kiện nào đánh dấu sự toàn thắng trong cuộc kháng chiến chống Mỹ, cứu nước (1954 - 1975)?</h2>
-      <div class="hint-container">
-        <p class="hint">Sự kiện giải phóng toàn bộ các tỉnh miền Nam.</p>
-        <p class="hint">Chiến thắng cuối cùng trong cuộc kháng chiến.</p>
-        <p class="hint">Ngày giải phóng Châu Đốc.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Sự kiện Châu Đốc là tỉnh cuối cùng của miền Nam được giải phóng đánh dấu sự toàn thắng trong cuộc kháng chiến chống Mĩ, cứu nước (1954 - 1975)</p>
-        <img class="answer-img"
-          src="https://res.cloudinary.com/dw5wzp49b/image/upload/v1728362260/ImageAnswer4Web_EXE201/c1_ChauDoc.png" />
-      </div>
+        <main id="mainContainer" class="flex-1 p-4 space-y-5 overflow-y-auto pb-24">
+            
+            <!-- BƯỚC 1: CẤU HÌNH THÔNG TIN CẦN ĐỌC -->
+            <section class="bg-blue-50/50 border border-blue-200 rounded-xl p-3.5 shadow-sm space-y-3">
+                <div class="flex justify-between items-center border-b border-blue-200 pb-2">
+                    <div>
+                        <h2 class="text-sm font-bold text-blue-900">1. Thiết lập thông tin cần đọc</h2>
+                        <p class="text-[11px] text-gray-500">Giữ nút ⠿ để kéo thả sắp xếp lại vị trí</p>
+                    </div>
+                    <button onclick="showAddModal()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1.5 rounded-lg font-medium shadow-sm transition active:scale-95 flex items-center gap-1">
+                        <span>+</span> Thêm thông tin
+                    </button>
+                </div>
+                
+                <div id="fieldsContainer" class="space-y-3"></div>
+
+                <button onclick="syncHeadersToSheet()" class="w-full bg-slate-800 hover:bg-slate-900 text-white text-xs py-2 rounded-lg font-medium shadow transition flex items-center justify-center gap-1.5">
+                    📥 Insert/Cập nhật tên các cột vào Excel
+                </button>
+            </section>
+
+            <!-- BẢNG XEM TRƯỚC CẤU TRÚC EXCEL -->
+            <section class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-gray-100 px-3 py-2.5 border-b border-gray-200 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-xs font-bold text-gray-800 uppercase">📊 Xem trước cấu hình cột Excel</h2>
+                        <p class="text-[10px] text-gray-500">Minh họa cấu trúc cột file Excel</p>
+                    </div>
+                    <span class="text-[10px] bg-blue-100 text-blue-800 font-semibold px-2 py-0.5 rounded-full">Xem trước</span>
+                </div>
+
+                <div class="overflow-x-auto excel-scroll">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr id="tableHeader" class="bg-gray-50 text-gray-700 font-semibold border-b border-gray-200"></tr>
+                        </thead>
+                        <tbody id="tableBody" class="divide-y divide-gray-200 font-mono text-[11px]"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- BƯỚC 2: CHỤP / TẢI ẢNH PHIẾU KHẢO SÁT -->
+            <section class="bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl p-4 text-center">
+                <h2 class="text-xs font-bold text-gray-700 uppercase tracking-wide mb-2 text-left">2. Chụp hoặc chọn ảnh phiếu</h2>
+                
+                <div class="mb-3">
+                    <div id="imagePreviewContainer" class="hidden mb-2">
+                        <img id="uploadedImage" src="" alt="Ảnh phiếu khảo sát" class="max-h-48 mx-auto rounded-lg shadow-md object-contain border">
+                    </div>
+                    <div id="placeholderIcon" class="text-gray-400 py-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <p class="text-xs text-gray-500">Chưa có ảnh phiếu nào được chọn</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <label class="bg-blue-50 text-blue-700 border border-blue-200 py-2.5 px-3 rounded-lg font-medium text-xs flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 transition">
+                        📷 Chụp ảnh mới
+                        <input type="file" accept="image/*" capture="environment" class="hidden" onchange="previewFile(event)">
+                    </label>
+                    <label class="bg-white text-gray-700 border border-gray-300 py-2.5 px-3 rounded-lg font-medium text-xs flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 transition">
+                        📁 Chọn từ thư viện
+                        <input type="file" accept="image/*" class="hidden" onchange="previewFile(event)">
+                    </label>
+                </div>
+            </section>
+
+            <!-- NÚT THỰC HIỆN QUÉT AI -->
+            <button id="btnScan" onclick="scanImageWithOpenAI()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 rounded-xl font-bold text-sm shadow-lg shadow-blue-200 flex items-center justify-center gap-2 active:scale-95 transition">
+                ⚡ Bắt đầu đọc phiếu bằng AI (GPT-4o)
+            </button>
+        </main>
+
+        <footer class="p-3 bg-white border-t border-gray-200 flex justify-end sticky bottom-0 z-10">
+            <button onclick="resetApp()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-3.5 py-2.5 rounded-lg font-medium text-xs active:scale-95 transition">
+                Đặt lại ban đầu
+            </button>
+        </footer>
+
     </div>
 
-    <div id="section2" class="section-container">
-      <h2 class="section-title">Trong cuộc kháng chiến chống Mỹ, chúng ta dự kiến chiến tranh có thể kéo dài bao lâu?</h2>
-      <div class="hint-container">
-        <p class="hint">Cuộc kháng chiến chống Mỹ được dự tính là gian khổ và trường kỳ do đối đầu với một siêu cường như Mỹ.</p>
-        <p class="hint">Đảng Cộng sản Việt Nam chuẩn bị tâm thế cho chiến tranh lâu dài.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Trong cuộc kháng chiến chống Mỹ, chúng ta dự kiến chiến tranh có thể kéo dài 5 năm, 10 năm, 20 năm hoặc lâu hơn nữa với rất khó khăn do sự can thiệp mạnh mẽ của Mỹ với tiềm lực quân sự lớn.</p>
-        <img class="answer-img"
-          src="https://res.cloudinary.com/dw5wzp49b/image/upload/v1728363258/ImageAnswer4Web_EXE201/c2.jpg" />
-      </div>
+    <!-- MODAL THÊM TRƯỜNG -->
+    <div id="addModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl max-w-xs w-full p-4 space-y-3 shadow-2xl">
+            <h3 class="font-bold text-sm text-gray-800">Chọn dạng câu hỏi cần thêm</h3>
+            <div class="space-y-2">
+                <button onclick="addNewField('radio')" class="w-full text-left p-2.5 border rounded-lg hover:bg-blue-50 hover:border-blue-300 transition text-xs">
+                    <div class="font-semibold text-blue-900">🔘 Chọn 1 đáp án (Radio)</div>
+                </button>
+                <button onclick="addNewField('likert')" class="w-full text-left p-2.5 border rounded-lg hover:bg-indigo-50 hover:border-indigo-300 transition text-xs">
+                    <div class="font-semibold text-indigo-900">⭐ Thang đo điểm (Likert)</div>
+                </button>
+                <button onclick="addNewField('text')" class="w-full text-left p-2.5 border rounded-lg hover:bg-emerald-50 hover:border-emerald-300 transition text-xs">
+                    <div class="font-semibold text-emerald-900">✏️ Ô nhập chữ (Text)</div>
+                </button>
+            </div>
+            <button onclick="hideAddModal()" class="w-full py-2 bg-gray-100 text-gray-600 rounded-lg text-xs font-medium">Hủy</button>
+        </div>
     </div>
 
-    <div id="section3" class="section-container">
-      <h2 class="section-title">Các hình thức chiến thuật thường vận dụng trong giai đoạn đầu kháng chiến chống Mỹ?</h2>
-      <div class="hint-container">
-        <p class="hint">Đánh nhỏ lẻ, tiêu hao sinh lực địch là chiến thuật chính, nhằm gây khó khăn cho quân Mỹ và đồng minh.</p>
-        <p class="hint">Bao vây, phục kích trên các tuyến đường chiến lược nhằm cắt đứt tiếp tế và cô lập địch.</p>
-        <p class="hint">Tận dụng địa hình rừng núi và sự linh hoạt.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Tập kích: Tấn công bất ngờ vào các vị trí quan trọng của đối phương để gây thiệt hại lớn và làm rối loạn hàng ngũ địch. <br>
-          Phục kích: Sử dụng địa hình và điều kiện tự nhiên để giấu quân, chờ đợi thời cơ thuận lợi nhằm tấn công bất ngờ quân địch. <br>
-          Vận động tiến công: Di chuyển linh hoạt để tiếp cận và tấn công địch, tận dụng yếu tố bất ngờ và sự nhanh nhẹn để giành ưu thế.</p>
-        <img class="answer-img"
-          src="" />
-      </div>
+    <!-- DIALOG CONFIRM -->
+    <div id="confirmModal" class="fixed inset-0 bg-black/60 hidden items-center justify-center p-4 z-50 overflow-y-auto">
+        <div class="bg-white rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl my-8">
+            <div class="border-b pb-3">
+                <h3 class="font-bold text-base text-gray-800">🔍 Xác nhận thông tin quét được</h3>
+                <p class="text-xs text-gray-500 mt-0.5">Kiểm tra kết quả trích xuất tương ứng với từng câu hỏi</p>
+            </div>
+
+            <div id="confirmTableContainer" class="space-y-3 max-h-80 overflow-y-auto p-1"></div>
+
+            <div class="pt-2 flex gap-2 border-t">
+                <button onclick="hideConfirmModal()" class="w-1/2 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-xs font-semibold hover:bg-gray-200">
+                    Sửa lại
+                </button>
+                <button id="btnSaveToSheet" onclick="confirmAndSaveToSheet()" class="w-1/2 py-2.5 bg-emerald-600 text-white rounded-xl text-xs font-bold hover:bg-emerald-700 shadow-md">
+                    🚀 Lưu vào Excel Online
+                </button>
+            </div>
+        </div>
     </div>
 
-    <div id="section4" class="section-container">
-      <h2 class="section-title">Trong cuộc kháng chiến chống Mỹ, chúng ta đã tổ chức và thực hiện nhiều loại hình chiến dịch, chiến dịch phòng ngự (Quảng Trị) diễn ra năm nào?</h2>
-      <div class="hint-container">
-        <p class="hint">Đây là một phần của Chiến dịch Xuân Hè 1972.</p>
-        <p class="hint">Quân Giải phóng đã tổ chức phòng ngự quyết liệt trước sự phản công dữ dội của Mỹ và đồng minh.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Chiến dịch phòng ngự Quảng Trị năm 1972 là một phần của Chiến dịch Xuân Hè 1972. Đây là cuộc chiến ác liệt nhằm bảo vệ và giữ vững vùng mới giải phóng trước sự phản công mạnh mẽ của quân đội Mỹ và Việt Nam Cộng hòa. Chiến dịch này thể hiện tinh thần chiến đấu kiên cường của quân dân Việt Nam.</p>
-        <img class="answer-img"
-          src="https://res.cloudinary.com/dw5wzp49b/image/upload/v1728363420/ImageAnswer4Web_EXE201/c3.jpg" />
-      </div>
-    </div>
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyzwLGsYvHa_sYeOSLCTTrzmqDGqGKCwgSZEDyjd64hGXK9Q-SdqOOgZppUHmpcDdgaRQ/exec";
+        const SECRET_TOKEN = "MatKhauBiMatCuaBan_2026_XYZ"; 
 
-    <div id="section5" class="section-container">
-      <h2 class="section-title">Trong cuộc kháng chiến chống Mỹ, chiến dịch phòng không được thực hiện ở Hà Nội thời gian nào?</h2>
-      <div class="hint-container">
-        <p class="hint">Chiến dịch này diễn ra vào một mùa đặc biệt cuối năm, khi thời tiết miền Bắc khá lạnh.</p>
-        <p class="hint">Nó xảy ra trong bối cảnh chiến tranh bước vào giai đoạn quyết định, trước khi Hiệp định Paris được ký kết.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Trong cuộc kháng chiến chống Mỹ, chiến dịch phòng không được thực hiện ở Hà Nội vào tháng 12 năm 1972, đập tan cuộc tập kích đường không chiến lược bằng máy bay B-52 của đế quốc Mỹ xuống Hà Nội, Hải Phòng,…</p>
-        <img class="answer-img"
-          src="" />
-      </div>
-    </div>
+        const STORAGE_KEY = 'SURVEY_SCHEMA_FIELDS_HARDCODED_V2';
 
-    <div id="section6" class="section-container">
-      <h2 class="section-title">Vì sao nói, cuộc Tổng tiến công và nổi dậy Mậu Thân 1968 đã mở ra một bước ngoặt trong cuộc kháng chiến chống Mĩ, cứu nước?</h2>
-      <div class="hint-container">
-        <p class="hint">Nó có thể được xem như một bước ngoặt khi tác động mạnh mẽ đến dư luận trong và ngoài nước về cuộc chiến.</p>
-        <p class="hint">Bạn có thể nghĩ đến những thay đổi trong chiến lược quân sự của cả hai bên sau sự kiện này.</p>
-        <p class="hint">Hãy xem xét cách mà cuộc tiến công này làm thay đổi cách nhìn nhận của thế giới về khả năng của quân đội miền Bắc.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Cuộc Tổng tiến công và nổi dậy Mậu Thân 1968 đã mở ra một bước ngoặt trong cuộc kháng chiến chống Mĩ, cứu nước vì nó đã đánh bại hoàn toàn chiến lược "Chiến tranh cục bộ" - một nỗ lực cao của Mĩ trong cuộc chiến tranh ở Việt Nam, cuộc kháng chiến của dân tộc ta chuyển sang giai đoạn vừa đánh vừa đàm, buộc Tổng thống Mĩ phải tuyên bố chấm dứt chiến tranh phá hoại miền Bắc.</p>
-        <img class="answer-img"
-          src="" />
-      </div>
-    </div>
+        const defaultFields = [
+            { id: 'ho_ten', type: 'text', prompt: 'Họ tên khách hàng' },
+            { id: 'do_tuoi', type: 'text', prompt: 'Độ tuổi' },
+            { id: 'email', type: 'text', prompt: 'Email' },
+            { id: 'thai_do_nv', type: 'radio', prompt: '1. Thái độ nhân viên', options: [{ text: 'Không đạt', val: 'Không đạt' }, { text: 'Bình thường', val: 'Bình thường' }, { text: 'Tốt', val: 'Tốt' }, { text: 'Rất tốt', val: 'Rất tốt' }] },
+            { id: 'thoi_gian_cho', type: 'radio', prompt: '2. Thời gian chờ', options: [{ text: 'Nhanh', val: 'Nhanh' }, { text: 'Chấp nhận được', val: 'Chấp nhận được' }, { text: 'Chậm', val: 'Chậm' }, { text: 'Rất chậm', val: 'Rất chậm' }] },
+            { id: 'gia_ca', type: 'radio', prompt: '3. Giá cả', options: [{ text: 'Rất cao', val: 'Rất cao' }, { text: 'Cao', val: 'Cao' }, { text: 'Vừa phải', val: 'Vừa phải' }, { text: 'Rẻ', val: 'Rẻ' }] },
+            { id: 'vi_tri_quan', type: 'likert', prompt: '1. Vị trí quán', minScale: 1, maxScale: 5 },
+            { id: 'chat_luong_nuoc', type: 'likert', prompt: '2. Chất lượng nước', minScale: 1, maxScale: 5 },
+            { id: 'khong_gian_vs', type: 'likert', prompt: '3. Không gian vệ sinh', minScale: 1, maxScale: 5 },
+            { id: 'binh_luan', type: 'text', prompt: 'IV. Bình luận khác / Ý kiến đóng góp' }
+        ];
 
-    <div id="section7" class="section-container">
-      <h2 class="section-title">Tên của một phong trào của học sinh, sinh viên miền Nam trong những năm chống Mĩ?</h2>
-      <div class="hint-container">
-        <p class="hint">Đề cập đến các hình thức biểu diễn, các hoạt động văn hóa tạo ra không khí tích cực và khích lệ tinh thần đấu tranh của người dân.</p>
-        <p class="hint">Tổ chức bởi Tổng hội sinh viên Sài Gòn và có sự lãnh đạo từ Mặt trận giải phóng miền Nam và Trung ương cục miền Nam.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>"Hát cho đồng bào tôi nghe” là phong trào đấu tranh đòi hòa bình trong chiến tranh Việt Nam dưới hình thức văn nghệ, âm nhạc, thơ ca nằm trong phong trào đấu tranh đô thị (đặc biệt ở Sài Gòn) trên trận tuyến văn hóa, tư tưởng, được tổ chức bởi Tổng hội sinh viên Sài Gòn với sự lãnh đạo của Mặt trận giải phóng miền Nam và Trung ương cục miền Nam thúc đẩy tinh thần yêu nước và khát vọng hòa bình.</p>
-        <img class="answer-img"
-          src="https://res.cloudinary.com/dw5wzp49b/image/upload/v1728921737/ImageAnswer4Web_EXE201/pc40sysgaxtcgzpwbum9.jpg" />
-      </div>
-    </div>
+        let fields = [];
+        let currentBase64Image = "";
+        let currentExtractedData = {};
 
-    <div id="section8" class="section-container">
-      <h2 class="section-title">Trong kháng chiến chống Mĩ cứu nước, miền Bắc đã chi viện cho những chiến trường nào?</h2>
-      <div class="hint-container">
-        <p class="hint">Cuộc kháng chiến chống Mỹ không chỉ giới hạn trong lãnh thổ Việt Nam, mà còn có tác động và sự liên kết với các phong trào cách mạng ở các nước lân cận.</p>
-        <p class="hint">Tạo ra sức ép đối với Mỹ và đồng minh, làm suy yếu sự can thiệp quân sự trong khu vực.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Miền nam, Lào, Campuchia</p>
-        <img class="answer-img"
-          src="" />
-      </div>
-    </div>
+        window.onload = function() {
+            loadFieldsFromStorage();
+            renderFields();
+            renderTable();
+        };
 
-    <div id="section9" class="section-container">
-      <h2 class="section-title">Thắng lợi của quân dân miền Bắc trong cuộc chiến đấu chống chiến tranh phá hoại lần thứ nhất của đế quốc Mĩ đã có tác dụng như thế nào đối với cuộc kháng chiến chống Mĩ, cứu nước của nhân dân ta?</h2>
-      <div class="hint-container">
-        <p class="hint">Thắng lợi giúp hình thành một mối liên hệ chặt chẽ hơn giữa 2 miền.</p>
-        <p class="hint">Khơi dậy ý chí và quyết tâm của các lực lượng kháng chiến.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Khẳng định quyết tâm chống Mĩ, cứu nước của nhân dân ta, góp phần làm lung lay ý chí xâm lược của Mĩ.</p>
-        <img class="answer-img"
-          src="https://res.cloudinary.com/dw5wzp49b/image/upload/v1728921459/ImageAnswer4Web_EXE201/c1vxxwp6ldzlej304ssj.jpg" />
-      </div>
-    </div>
+        function loadFieldsFromStorage() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            fields = saved ? JSON.parse(saved) : [...defaultFields];
+        }
 
-    <div id="section10" class="section-container">
-      <h2 class="section-title">Tuyến đường vận tải chiến lược nối liền hậu phương miền Bắc với tiền tuyến miền Nam trong cuộc kháng chiến chống Mĩ là?</h2>
-      <div class="hint-container">
-        <p class="hint">Đây là con  đường huyết mạch cung cấp vũ khí, lương thực và quân lính cho miền Nam, góp phần quan trọng vào chiến tranh.</p>
-        <p class="hint">Con đường chạy dọc theo biên giới Việt – Lào và kết nối miền Bắc với miền Nam.</p>
-        <p class="hint">Con đường này bị Mỹ ném bom dày đặc nhằm cắt đứt đường tiếp tế.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Đường Hồ Chí Minh.</p>
-        <img class="answer-img"
-          src="https://res.cloudinary.com/dw5wzp49b/image/upload/v1728920997/ImageAnswer4Web_EXE201/pn3qkfndsbby3cjwstjk.webp" />
-      </div>
-    </div>
+        function saveFieldsToStorage() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(fields));
+        }
 
-    <div id="section11" class="section-container">
-      <h2 class="section-title">Ai là người chỉ huy chiến dịch Điện Biên Phủ trên không năm 1972?</h2>
-      <div class="hint-container">
-        <p class="hint">Ông là vị tướng được mệnh danh là "Đại tướng của nhân dân" và là người chỉ huy cả chiến dịch Điện Biên Phủ năm 1954.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Võ Nguyên Giáp</p>
-        <img class="answer-img"
-          src="https://lh5.googleusercontent.com/proxy/X5-SP3X1OvOHGmLqy2vdTCHp5RcLE6igrc3uRUielWr4sAsS5p0GONzvW69MLx3c7IQnBzmURyYa6lyeq2knXOt0G5_9ObWHoHqD66x-MUhP-pICsqD5C8ow2dW3gEXmV7qJPZ4INe_FfUyk5UkRjve3XNkWr-6DuxOWEjBFMCAPK5qKl1MLjkOW5w" />
-      </div>
-    </div>
+        function renderFields() {
+            const container = document.getElementById('fieldsContainer');
+            container.innerHTML = '';
+            fields.forEach((field, index) => {
+                const card = document.createElement('div');
+                card.className = "field-card bg-white p-3 border border-gray-200 rounded-lg shadow-sm space-y-2 text-xs relative";
+                card.dataset.index = index;
 
-    <div id="section12" class="section-container">
-      <h2 class="section-title">Chiến dịch Điện Biên Phủ trên không diễn ra trong tháng nào năm 1972?</h2>
-      <div class="hint-container">
-        <p class="hint">Chiến dịch này diễn ra vào cuối năm, ngay trước Tết Nguyên đán.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Tháng 12</p>
-        <img class="answer-img" src="https://res.cloudinary.com/dw5wzp49b/image/upload/v1728921198/ImageAnswer4Web_EXE201/vznbddbvq52nxjyw9cpt.jpg" />
-      </div>
-    </div>
+                let bodyHTML = '';
+                if (field.type === 'radio') {
+                    bodyHTML = `
+                        <div>
+                            <label class="block text-[11px] font-medium text-gray-600 mb-1">Câu hỏi trên phiếu:</label>
+                            <input type="text" value="${field.prompt}" onchange="updateField(${index}, 'prompt', this.value)" class="w-full border p-1.5 rounded text-xs bg-gray-50 focus:bg-white">
+                        </div>
+                        <div class="space-y-1.5 bg-gray-50 p-2 rounded border border-gray-100">
+                            <div class="flex justify-between items-center">
+                                <span class="text-[11px] font-bold text-gray-700">Quy đổi giá trị:</span>
+                                <button onclick="addOption(${index})" class="text-[10px] text-blue-600 font-bold bg-blue-50 px-2 py-0.5 rounded border border-blue-200">+ Thêm lựa chọn</button>
+                            </div>
+                            ${field.options.map((opt, optIdx) => `
+                                <div class="flex items-center gap-1.5">
+                                    <input type="text" value="${opt.text}" onchange="updateOption(${index},${optIdx}, 'text', this.value)" class="w-1/2 border p-1 rounded text-[11px]" placeholder="Chữ trên phiếu">
+                                    <span class="text-[10px] text-gray-400">➔</span>
+                                    <input type="text" value="${opt.val}" onchange="updateOption(${index},${optIdx}, 'val', this.value)" class="w-1/2 border p-1 rounded text-[11px] font-mono font-semibold text-blue-600" placeholder="Giá trị quy đổi">
+                                    <button onclick="removeOption(${index},${optIdx})" class="text-red-500 font-bold text-xs px-1">✕</button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                } else if (field.type === 'likert') {
+                    bodyHTML = `
+                        <div>
+                            <label class="block text-[11px] font-medium text-gray-600 mb-1">Tiêu chí đánh giá (Thang điểm):</label>
+                            <input type="text" value="${field.prompt}" onchange="updateField(${index}, 'prompt', this.value)" class="w-full border p-1.5 rounded text-xs bg-gray-50 focus:bg-white">
+                        </div>
+                        <div class="flex items-center gap-2 bg-gray-50 p-2 rounded border border-gray-100">
+                            <span class="text-[10px] font-medium text-gray-600">Thang điểm:</span>
+                            <input type="number" value="${field.minScale}" onchange="updateScale(${index}, 'minScale', this.value)" class="w-12 border p-1 rounded text-center text-xs">
+                            <span class="text-xs">đến</span>
+                            <input type="number" value="${field.maxScale}" onchange="updateScale(${index}, 'maxScale', this.value)" class="w-12 border p-1 rounded text-center text-xs">
+                        </div>
+                    `;
+                } else if (field.type === 'text') {
+                    bodyHTML = `
+                        <div>
+                            <label class="block text-[11px] font-medium text-gray-600 mb-1">Tên ô nhập liệu / Tiêu đề:</label>
+                            <input type="text" value="${field.prompt}" onchange="updateField(${index}, 'prompt', this.value)" class="w-full border p-1.5 rounded text-xs bg-gray-50 focus:bg-white">
+                        </div>
+                    `;
+                }
 
-    <div id="section13" class="section-container">
-      <h2 class="section-title">Việt Nam bị chia cắt tại vĩ tuyến nào theo Hiệp định Genève năm 1954?</h2>
-      <div class="hint-container">
-        <p class="hint">Vĩ tuyến này chia cắt miền Bắc và miền Nam.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Vĩ tuyến 17</p>
-        <img class="answer-img" src="https://i.ytimg.com/vi/TG4qYIlu1jA/maxresdefault.jpg" />
-      </div>
-    </div>
+                card.innerHTML = `
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <div class="flex items-center gap-1.5">
+                            <span class="drag-handle cursor-grab text-gray-400 hover:text-gray-700 p-1 font-bold text-base select-none">⠿</span>
+                            <span class="font-bold text-gray-700">Mã cột:</span>
+                            <input type="text" value="${field.id}" onchange="updateField(${index}, 'id', this.value)" class="border px-1.5 py-0.5 rounded font-mono text-blue-600 font-bold w-24 text-xs">
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <button onclick="duplicateField(${index})" class="text-blue-700 text-xs font-bold px-2 py-1 bg-blue-50 rounded-md border border-blue-200">⎘ Nhân bản</button>
+                            <button onclick="deleteField(${index})" class="text-red-700 text-xs font-bold px-2 py-1 bg-red-50 rounded-md border border-red-200">✕ Xóa</button>
+                        </div>
+                    </div>
+                    ${bodyHTML}
+                `;
+                container.appendChild(card);
+            });
+            setupDragAndDrop();
+        }
 
-    <div id="section14" class="section-container">
-      <h2 class="section-title">Chiến dịch Hồ Chí Minh kết thúc vào ngày nào?</h2>
-      <div class="hint-container">
-        <p class="hint">Đó là ngày cuối tháng 4, đánh dấu chiến thắng lịch sử.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>30/4/1975</p>
-        <img class="answer-img"
-          src="https://storage-vnportal.vnpt.vn/ndh-ubnd/5710/nga2/z5376528425430_4a7bebfbbcfdd3a31fbd90f110ece256.jpg" />
-      </div>
-    </div>
+        let draggedIndex = null;
+        function setupDragAndDrop() {
+            const container = document.getElementById('fieldsContainer');
+            container.querySelectorAll('.field-card').forEach((card) => {
+                const handle = card.querySelector('.drag-handle');
+                handle.addEventListener('mousedown', () => card.setAttribute('draggable', 'true'));
+                handle.addEventListener('mouseup', () => card.removeAttribute('draggable'));
+                card.addEventListener('dragstart', () => { draggedIndex = parseInt(card.dataset.index); card.classList.add('dragging'); });
+                card.addEventListener('dragend', () => { card.classList.remove('dragging'); card.removeAttribute('draggable'); draggedIndex = null; });
+                card.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    const targetIndex = parseInt(e.currentTarget.dataset.index);
+                    if (draggedIndex !== null && draggedIndex !== targetIndex) {
+                        reorderFields(draggedIndex, targetIndex);
+                        draggedIndex = targetIndex;
+                    }
+                });
+            });
+        }
 
-    <div id="section15" class="section-container">
-      <h2 class="section-title">Văn bản nào chấm dứt sự can thiệp quân sự của Mỹ vào Việt Nam?</h2>
-      <div class="hint-container">
-        <p class="hint">Hiệp định này được ký kết tại một thành phố lớn ở châu Âu.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Hiệp định Paris</p>
-        <img class="answer-img"
-          src="https://lh5.googleusercontent.com/proxy/X5-SP3X1OvOHGmLqy2vdTCHp5RcLE6igrc3uRUielWr4sAsS5p0GONzvW69MLx3c7IQnBzmURyYa6lyeq2knXOt0G5_9ObWHoHqD66x-MUhP-pICsqD5C8ow2dW3gEXmV7qJPZ4INe_FfUyk5UkRjve3XNkWr-6DuxOWEjBFMCAPK5qKl1MLjkOW5w" />
-      </div>
-    </div>
+        function reorderFields(fromIdx, toIdx) {
+            const movedItem = fields.splice(fromIdx, 1)[0];
+            fields.splice(toIdx, 0, movedItem);
+            saveFieldsToStorage();
+            renderFields();
+            renderTable();
+        }
 
-    <div id="section16" class="section-container">
-      <h2 class="section-title">Thành phố nào là nơi diễn ra trận chiến ác liệt trong chiến dịch Tết Mậu Thân 1968?</h2>
-      <div class="hint-container">
-        <p class="hint"> Đây là thành phố cố đô của Việt Nam.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Huế</p>
-        <img class="answer-img"
-          src="https://tourdanangcity.vn/wp-content/uploads/2021/04/co-do-hue-9.jpg" />
-      </div>
-    </div>
+        function duplicateField(idx) {
+            const duplicated = JSON.parse(JSON.stringify(fields[idx]));
+            duplicated.id = `${fields[idx].id}_copy`;
+            fields.splice(idx + 1, 0, duplicated);
+            saveFieldsToStorage();
+            renderFields();
+            renderTable();
+        }
 
-    <div id="section17" class="section-container">
-      <h2 class="section-title">Với chiến thắng của phong trào “Đồng Khởi”, quân và dân miền Nam đã làm phá sản chiến lược chiến tranh nào của Mĩ?</h2>
-      <div class="hint-container">
-        <p class="hint">Đây là chiến lược nhằm  tìm diệt cơ sở cách mạng của quân kháng chiến ở miền Nam.</p>
-        <p class="hint">Làm bàn đạp tiến công trực tiếp ra miền Bắc.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Chiến tranh đơn phương</p>
-        <img class="answer-img"
-          src="https://dinhnghia.vn/wp-content/uploads/2019/04/chien-tranh-don-phuong-1.jpg" />
-      </div>
-    </div>
+        function renderTable() {
+            const header = document.getElementById('tableHeader');
+            const body = document.getElementById('tableBody');
+            let headerHTML = '<th class="p-2 border-r border-gray-200 whitespace-nowrap bg-gray-100 font-bold text-gray-600">Thời gian quét</th>';
+            fields.forEach(f => {
+                headerHTML += `<th class="p-2 border-r border-gray-200 whitespace-nowrap font-bold text-blue-700">${f.id || 'Cột'}</th>`;
+            });
+            header.innerHTML = headerHTML;
+            body.innerHTML = `<tr><td colspan="${fields.length + 1}" class="p-2 text-center text-gray-400 italic">Cấu trúc hiển thị sẵn sàng</td></tr>`;
+        }
 
-    <div id="section18" class="section-container">
-      <h2 class="section-title">Chủ trương “Thần tốc, táo bạo, bất ngờ, chắc thắng”, đó là tinh thần và khí thế của ta trong Chiến dịch nào?</h2>
-      <div class="hint-container">
-        <p class="hint">Đây là chiến dịch quân sự lớn nhất của Quân Giải phóng miền Nam.</p>
-        <p class="hint">Việt Nam nhằm giải phóng miền Nam, thống nhất đất nước.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Chiến dịch Hồ Chí Minh</p>
-        <img class="answer-img"
-          src="https://res.cloudinary.com/dw5wzp49b/image/upload/v1728921956/ImageAnswer4Web_EXE201/ui9ovo7yqgelufegijtx.jpg" />
-      </div>
-    </div>
+        function updateField(idx, prop, val) { fields[idx][prop] = val; saveFieldsToStorage(); renderTable(); }
+        function updateOption(fieldIdx, optIdx, prop, val) { fields[fieldIdx].options[optIdx][prop] = val; saveFieldsToStorage(); }
+        function addOption(fieldIdx) { fields[fieldIdx].options.push({ text: 'Lựa chọn mới', val: '1' }); saveFieldsToStorage(); renderFields(); }
+        function removeOption(fieldIdx, optIdx) { fields[fieldIdx].options.splice(optIdx, 1); saveFieldsToStorage(); renderFields(); }
+        function updateScale(idx, prop, val) { fields[idx][prop] = parseInt(val) || 1; saveFieldsToStorage(); }
+        function deleteField(idx) { fields.splice(idx, 1); saveFieldsToStorage(); renderFields(); renderTable(); }
+        function showAddModal() { document.getElementById('addModal').classList.remove('hidden'); document.getElementById('addModal').classList.add('flex'); }
+        function hideAddModal() { document.getElementById('addModal').classList.add('hidden'); document.getElementById('addModal').classList.remove('flex'); }
 
-    <div id="section19" class="section-container">
-      <h2 class="section-title">Đâu được xem là ngọn đồi với biệt danh "Ngọn đồi 2 triệu đô" bị Mỹ ném bom nhằm tiêu diệt các lực lượng kháng chiến ở miền Nam</h2>
-      <div class="hint-container">
-        <p class="hint">Là một phần thuộc dãy núi Cô Tô Tọa lạc tại huyện Tri Tôn, An Giang</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Đồi Tức Dụp</p>
-        <img class="answer-img"
-          src="https://res.cloudinary.com/dw5wzp49b/image/upload/v1728922000/ImageAnswer4Web_EXE201/fbjrz6kk6jygyzgbakw7.jpg" />
-      </div>
-    </div>
+        function addNewField(type) {
+            hideAddModal();
+            const count = fields.length + 1;
+            if (type === 'radio') {
+                fields.push({ id: `cau_hoi_${count}`, type: 'radio', prompt: 'Câu hỏi mới', options: [{ text: 'Lựa chọn A', val: 'A' }, { text: 'Lựa chọn B', val: 'B' }] });
+            } else if (type === 'likert') {
+                fields.push({ id: `tieu_chi_${count}`, type: 'likert', prompt: 'Tiêu chí đánh giá', minScale: 1, maxScale: 5 });
+            } else if (type === 'text') {
+                fields.push({ id: `noi_dung_${count}`, type: 'text', prompt: 'Nội dung thông tin' });
+            }
+            saveFieldsToStorage();
+            renderFields();
+            renderTable();
+        }
 
-    <div id="section20" class="section-container">
-      <h2 class="section-title">Âm mưu nào không nằm trong âm mưu phá hoại lần thứ nhất của Mĩ?</h2>
-      <div class="hint-container">
-        <p class="hint">Chọn một trong các đáp án sau:</p>
-        <p class="hint">- Uy hiếp tinh thần, làm lung lay quyết tâm chống Mĩ của nhân dân hai miền Việt Nam.</p>
-        <p class="hint">- Ngăn chặn nguồn chi viện từ bên ngoài vào miền Bắc và từ miền Bắc vào miền Nam.</p>
-        <p class="hint">- Cứu nguy cho chiến lược “Chiến tranh cục bộ” ở miền Nam.</p>
-        <p class="hint">- Phá tiềm lực kinh tế, phá công cuộc xây dựng chủ nghĩa xã hội ở miền Bắc.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Cứu nguy cho chiến lược “Việt Nam hóa chiến tranh” là âm mưu của Mĩ trong chiến tranh phá hoại lần thứ HAI của Mĩ.</p>
-        <img class="answer-img"
-          src="https://i0.wp.com/thukyphaply.com/wp-content/uploads/2021/04/so-sanh-chien-tranh-pha-hoai-mien-bac-lan-1-lan-2.jpg?fit=600%2C384&ssl=1" />
-      </div>
-    </div>
+        function previewFile(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    currentBase64Image = e.target.result;
+                    document.getElementById('uploadedImage').src = currentBase64Image;
+                    document.getElementById('imagePreviewContainer').classList.remove('hidden');
+                    document.getElementById('placeholderIcon').classList.add('hidden');
+                }
+                reader.readAsDataURL(file);
+            }
+        }
 
-    <div id="section21" class="section-container">
-      <h2 class="section-title">Chiến dịch "Rolling Thunder" do Mỹ triển khai nhằm tấn công khu vực nào của Việt Nam?</h2>
-      <div class="hint-container">
-        <p class="hint">Tấn công vào nguồn chi viện của miền Nam.</p>
-        <p class="hint">Khu vực từ vĩ tuyến 17 trở ra.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Tấn công miền Bắc</p>
-        <img class="answer-img"
-          src="https://res.cloudinary.com/dw5wzp49b/image/upload/v1728922150/ImageAnswer4Web_EXE201/xtkw5lfw04x1nwkgtfrl.jpg" />
-      </div>
-    </div>
+        // ĐỒNG BỘ CỘT VỚI GOOGLE SHEETS (Dùng text/plain để tránh lỗi Preflight CORS)
+        async function syncHeadersToSheet() {
+            try {
+                const headersList = fields.map(f => f.id);
+                
+                await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({ 
+                        token: SECRET_TOKEN,
+                        action: "ensureHeaders", 
+                        fields: headersList 
+                    })
+                });
+                alert("✅ Đã cập nhật tên cột thành công vào Excel!");
+            } catch (err) {
+                alert("Lỗi: " + err.message);
+            }
+        }
 
-    <div id="section22" class="section-container">
-      <h2 class="section-title">Sự kiện nào được coi là "giọt nước tràn ly" dẫn đến sự can thiệp sâu hơn của Mỹ?</h2>
-      <div class="hint-container">
-        <p class="hint">Xảy ra vào tháng 8 năm 1964.</p>
-        <p class="hint">Mỹ cáo buộc các cuộc tấn công được cho là của quân Bắc Việt vào các tàu chiến của Mỹ ở khu vực này.</p>
-        <p class="hint">Vùng nước nằm giữa Việt Nam và Trung Quốc.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Sự kiện Vịnh Bắc Bộ</p>
-        <img class="answer-img"
-          src="https://res.cloudinary.com/dw5wzp49b/image/upload/v1728922254/ImageAnswer4Web_EXE201/pgy1kiovw8txlbrxgy3f.png" />
-      </div>
-    </div>
+        // QUÉT ẢNH BẰNG AI (Dùng text/plain để tránh lỗi Preflight CORS)
+        async function scanImageWithOpenAI() {
+            if (!currentBase64Image) return alert("Vui lòng chụp hoặc chọn ảnh phiếu khảo sát trước!");
 
-    <div id="section23" class="section-container">
-      <h2 class="section-title">Ai là người đại diện cho Việt Nam trong các cuộc đàm phán Hiệp định Paris?</h2>
-      <div class="hint-container">
-        <p class="hint">Người Việt Nam đầu tiên từng từ chối giải Nobel Hòa bình năm 1973</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Lê Đức Thọ</p>
-        <img class="answer-img"
-          src="https://res.cloudinary.com/dw5wzp49b/image/upload/v1728922366/ImageAnswer4Web_EXE201/g6gtomumsfcd4b0ehcsg.jpg" />
-      </div>
-    </div>
+            const btnScan = document.getElementById('btnScan');
+            btnScan.innerText = "⏳ AI đang phân tích phiếu...";
+            btnScan.disabled = true;
 
-    <div id="section24" class="section-container">
-      <h2 class="section-title">Sự kiện nào khiến quân đội Mỹ phải rút quân khỏi Việt Nam?</h2>
-      <div class="hint-container">
-        <p class="hint">Sự kiện này diễn ra vào 27/1/1973
-          Sự kiện này buộc 4 bên ngồi vào bàn đàm phán (Mỹ, Việt Nam Dân chủ Cộng hòa, Cộng hòa miền Nam Việt Nam và Việt Nam Cộng hòa) nhằm chấm dứt chiến tranh và thiết lập hòa bình ở Việt Nam</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Hiệp định Paris</p>
-        <img class="answer-img"
-          src="https://res.cloudinary.com/dw5wzp49b/image/upload/v1728922715/ImageAnswer4Web_EXE201/xdkobwpngzbd7woyl7o4.jpg" />
-      </div>
-    </div>
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({
+                        token: SECRET_TOKEN,
+                        action: "scanImage",
+                        fields: fields,
+                        image: currentBase64Image
+                    })
+                });
 
-    <div id="section25" class="section-container">
-      <h2 class="section-title">Ai là tác giả của bài thơ "Bài thơ về tiểu đội xe không kính"?</h2>
-      <div class="hint-container">
-        <p class="hint">Nhà thơ tiêu biểu của thơ ca kháng chiến chống Mỹ.</p>
-        <p class="hint">Tên của ông được đặt tên cho một tuyến phố ở quận Bắc Từ Liêm, Hà Nội</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Phạm Tiến Duật</p>
-        <img class="answer-img" src="https://res.cloudinary.com/dw5wzp49b/image/upload/v1728922866/ImageAnswer4Web_EXE201/s0ebfsu6xvlnwrpxjstw.jpg"/>
-      </div>
-    </div>
+                const resData = await response.json();
+                if (resData.status === "error") throw new Error(resData.message);
 
-    <div id="section26" class="section-container">
-      <h2 class="section-title">Sự kiện nào đã dẫn đến việc Mỹ quyết định rút quân khỏi Việt Nam?</h2>
-      <div class="hint-container">
-        <p class="hint">Được ký kết vào năm 1973 đã dẫn đến việc Mỹ phải rút quân và ngừng tham chiến trực tiếp tại Việt Nam.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Ký kết Hiệp định Paris (1973)</p>
-        <img class="answer-img" src="https://res.cloudinary.com/dw5wzp49b/image/upload/v1728922715/ImageAnswer4Web_EXE201/xdkobwpngzbd7woyl7o4.jpg"/>
-      </div>
-    </div>
+                currentExtractedData = resData.data;
+                showConfirmModal(currentExtractedData);
 
-    <div id="section27" class="section-container">
-      <h2 class="section-title">Phong trào "Đồng Khởi" bắt đầu từ tỉnh nào?</h2>
-      <div class="hint-container">
-        <p class="hint">Diễn ra vào năm 1960.</p>
-        <p class="hint">Mở ra cao trào đấu tranh vũ trang của nhân dân miền Nam.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Bến Tre</p>
-        <img class="answer-img" src="https://upload.wikimedia.org/wikipedia/commons/1/18/Nha_truyen_thong_Dong_Khoi.JPG"/>
-      </div>
-    </div>
+            } catch (err) {
+                alert("Lỗi quét AI: " + err.message);
+            } finally {
+                btnScan.innerText = "⚡ Bắt đầu đọc phiếu bằng AI (GPT-4o)";
+                btnScan.disabled = false;
+            }
+        }
 
-    <div id="section28" class="section-container">
-      <h2 class="section-title">Sự kiện nào buộc Mỹ phải chấp nhận ký kết Hiệp định Paris?</h2>
-      <div class="hint-container">
-        <p class="hint">Chiến thắng này đã buộc Mỹ phải ngừng ném bom và chấp nhận ký kết Hiệp định Paris vào năm 1973.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Chiến thắng Điện Biên Phủ trên không - 1972</p>
-        <img class="answer-img" src="https://bantuyengiao.cantho.gov.vn/uploads/news/2022_12/5-12-dbptk.jpg"/>
-      </div>
-    </div>
+        function showConfirmModal(extractedData) {
+            const container = document.getElementById('confirmTableContainer');
+            container.innerHTML = '';
 
-    <div id="section29" class="section-container">
-      <h2 class="section-title">Cuộc kháng chiến chống Mỹ của nhân dân Việt Nam kết thúc vào năm nào?</h2>
-      <div class="hint-container">
-        <p class="hint">Cuộc kháng chiến chống Mỹ của nhân dân Việt Nam diễn ra ở Sài Gòn với sự kiện giải phóng miền Nam</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>1975</p>
-        <img class="answer-img" src="https://tuyengiaobinhphuoc.org.vn/uploads/news/2021_09/image-20210918202817-1.jpeg"/>
-      </div>
-    </div>
+            fields.forEach(field => {
+                const fieldValue = extractedData[field.id] || "";
+                const itemDiv = document.createElement('div');
+                itemDiv.className = "bg-gray-50 p-3 rounded-xl border border-gray-200 space-y-1";
 
-    <div id="section30" class="section-container">
-      <h2 class="section-title">Hiệp định Paris về chấm dứt chiến tranh, lập lại hòa bình ở Việt Nam được ký kết vào năm nào?</h2>
-      <div class="hint-container">
-        <p class="hint">Hiệp định Paris được ký kết nhằm chấm dứt sự tham chiến trực tiếp của Mỹ tại Việt Nam.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>1973</p>
-        <img class="answer-img" src="https://quantri.tpthuduc.hochiminhcity.gov.vn/UploadImages/phuoclonga/2024_1_27/pari03_271202411.jpg?w=1130"/>
-      </div>
-    </div>
+                itemDiv.innerHTML = `
+                    <label class="block text-xs font-bold text-gray-700">${field.prompt}</label>
+                    <input type="text" data-field-id="${field.id}" value="${fieldValue}" 
+                           class="confirm-input w-full p-2 border border-gray-300 rounded-lg text-xs font-medium text-blue-900 bg-white focus:ring-2 focus:ring-blue-500 outline-none">
+                `;
+                container.appendChild(itemDiv);
+            });
 
-    <div id="section31" class="section-container">
-      <h2 class="section-title">Ngày nào quân Giải phóng đã tiến vào Dinh Độc Lập, kết thúc chiến tranh Việt Nam?</h2>
-      <div class="hint-container">
-        <p class="hint">Sự kiện này đã giúp quân Giải phóng đã tiến vào Dinh Độc Lập, đánh dấu sự sụp đổ của chính quyền Sài Gòn và chấm dứt cuộc kháng chiến chống Mỹ.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>30/4/1975</p>
-        <img class="answer-img" src="https://a.tcnn.vn/uploads/resources/anhlt/images/30-4/xe_tang_truoc_dinh_doc_lap_trong_ngay_giai_phong_2.gif.0.570.cache.jpg"/>
-      </div>
-    </div>
+            document.getElementById('confirmModal').classList.remove('hidden');
+            document.getElementById('confirmModal').classList.add('flex');
+        }
 
-    <div id="section32" class="section-container">
-      <h2 class="section-title">Xe tăng của Quân Giải phóng húc đổ cổng chính của Dinh Độc Lập vào khoảng thời gian nào?</h2>
-      <div class="hint-container">
-        <p class="hint">Thời điểm diễn ra lúc giữa trưa.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>10 giờ 45 phút sáng</p>
-        <img class="answer-img" src="https://a.tcnn.vn/uploads/resources/anhlt/images/30-4/xe_tang_truoc_dinh_doc_lap_trong_ngay_giai_phong_2.gif.0.570.cache.jpg"/>
-      </div>
-    </div>
+        function hideConfirmModal() {
+            document.getElementById('confirmModal').classList.add('hidden');
+            document.getElementById('confirmModal').classList.remove('flex');
+        }
 
-    <div id="section33" class="section-container">
-      <h2 class="section-title">Lá cờ của Mặt trận Dân tộc Giải phóng miền Nam Việt Nam được cắm trên nóc Dinh Độc Lập vào lúc nào?</h2>
-      <div class="hint-container">
-        <p class="hint">Thời điểm diễn ra lúc giữa trưa.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>12 giờ trưa</p>
-        <img class="answer-img" src="https://image.phunuonline.com.vn/fckeditor/upload/2020/20201217/images/dem-truoc-cua-nhung-la-co-_91608218158.jpg"/>
-      </div>
-    </div>
+        async function confirmAndSaveToSheet() {
+            const btnSave = document.getElementById('btnSaveToSheet');
+            btnSave.innerText = "⏳ Đang lưu...";
+            btnSave.disabled = true;
 
-    <div id="section34" class="section-container">
-      <h2 class="section-title">Sự kiện xe tăng tiến vào Dinh Độc Lập vào năm 1975 thường được gọi là gì?</h2>
-      <div class="hint-container">
-        <p class="hint">Là một phần trong công cuộc góp công giành chiến thắng.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Chiến dịch Hồ Chí Minh </p>
-        <img class="answer-img" src="https://img.baoninhbinh.org.vn/DATA/ARTICLES/2023/4/26/ngay-nay-48-nam-truoc-26-4-1975-chien-dich-ho-chi-minh-chinh-cae27.jpg"/>
-      </div>
-    </div>
+            const confirmInputs = document.querySelectorAll('.confirm-input');
+            const rowData = [new Date().toLocaleString("vi-VN")];
 
-    <div id="section35" class="section-container">
-      <h2 class="section-title">Ngày 30/4/1975 là ngày lịch sử quan trọng của dân tộc Việt Nam, đánh dấu sự kiện gì?</h2>
-      <div class="hint-container">
-        <p class="hint">Ngày này đã mở ra một trang mới cho đất nước, đánh dấu sự thống nhất của toàn bộ lãnh thổ Việt Nam.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Giải phóng hoàn toàn miền Nam, thống nhất đất nước</p>
-        <img class="answer-img" src="https://i.ytimg.com/vi/2vT5FYa2jO0/maxresdefault.jpg"/>
-      </div>
-    </div>
+            confirmInputs.forEach(input => rowData.push(input.value));
 
-    <div id="section36" class="section-container">
-      <h2 class="section-title">Tình hình quân sự của quân đội miền Bắc Việt Nam trong cuộc kháng chiến chống Mỹ được tăng cường từ sự hỗ trợ của quốc gia nào?</h2>
-      <div class="hint-container">
-        <p class="hint">Được sự hỗ trợ quân sự và vật chất của các nước Chủ nghĩa xã hội.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Liên Xô, Trung Quốc và Cuba</p>
-        <img class="answer-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Communist_countries.svg/1200px-Communist_countries.svg.png"/>
-      </div>
-    </div>
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({
+                        token: SECRET_TOKEN,
+                        action: "addRow",
+                        rowData: rowData
+                    })
+                });
 
-    <div id="section37" class="section-container">
-      <h2 class="section-title">Ngày nào được chọn làm ngày thống nhất đất nước?</h2>
-      <div class="hint-container">
-        <p class="hint">Ngày đánh dấu về sự chấm dứt chiến tranh, kết thúc của cuộc kháng chiến chống Mỹ.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>30/4</p>
-        <img class="answer-img" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDaDqyZG5T6gLWFNKg-7AVBZrFUiRPmf8Ebg&s"/>
-      </div>
-    </div>
+                alert("✅ Đã chèn dữ liệu mới thành công vào dưới cùng của Excel Online!");
+                hideConfirmModal();
+                
+                document.getElementById('imagePreviewContainer').classList.add('hidden');
+                document.getElementById('placeholderIcon').classList.remove('hidden');
+                currentBase64Image = "";
 
-    <div id="section38" class="section-container">
-      <h2 class="section-title">Địa danh nào được xem là biểu tượng cho cuộc chiến đấu kiên cường của nhân dân miền Nam chống lại Mỹ?</h2>
-      <div class="hint-container">
-        <p class="hint">Là vùng đất nổi tiếng với hệ thống địa đạo và cuộc chiến đấu kiên cường của nhân dân miền Nam chống lại Mỹ.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Củ Chi</p>
-        <img class="answer-img" src="https://cdn.tgdd.vn/Files/2022/02/22/1416753/cam-nang-du-lich-dia-dao-cu-chi-ham-di-tich-lich-su-noi-tieng-202202220646478572.jpg"/>
-      </div>
-    </div>
+            } catch (err) {
+                alert("Lỗi lưu dữ liệu: " + err.message);
+            } finally {
+                btnSave.innerText = "🚀 Lưu vào Excel Online";
+                btnSave.disabled = false;
+            }
+        }
 
-    <div id="section39" class="section-container">
-      <h2 class="section-title">Đường lối thể hiện sự lãnh đạo sáng suốt, độc đáo của Đảng ta ngay sau khi hiệp định Giơ-ne-vơ được kí kết là:</h2>
-      <div class="hint-container">
-        <p class="hint">Insert video link</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Đảng ta đã sáng suốt tiến hành đồng thời cách mạng dân tộc dân chủ nhân dân ở miền Nam và cách mạng Xã hội chủ nghĩa ở miền Bắc.</p>
-        <img class="answer-img" src="https://vnn-imgs-f.vgcloud.vn/2021/01/21/12/fourth-party-congress-completely-liberating-the-south.jpg"/>
-      </div>
-    </div>
-
-    <div id="section40" class="section-container">
-      <h2 class="section-title">Đâu là một trong những nhân vật đã đóng vai trò quan trọng trong việc lãnh đạo phong trào kháng chiến chống Mỹ?</h2>
-      <div class="hint-container">
-        <p class="hint">Hãy nghĩ về những chiến dịch nổi bật mà ông đã chỉ huy và vai trò của ông là 1 đại tướng.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Đại tướng Võ Nguyên Giáp.</p>
-        <img class="answer-img" src="https://www.chodulich.com.vn/images/0_Dai_tuong_Vo_Nguyen_Giap.jpg"/>
-      </div>
-    </div>
-
-    <div id="section41" class="section-container">
-      <h2 class="section-title">Đâu là một loại vũ khí mà Mỹ đã sử dụng trong chiến tranh Việt Nam để phá hoại hạ tầng và gây thiệt hại nặng nề cho môi trường?</h2>
-      <div class="hint-container">
-        <p class="hint">Hãy tìm hiểu về tác động lâu dài của việc sử dụng vũ khí hóa học đối với môi trường và sức khỏe của người dân Việt Nam.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Mỹ đã sử dụng chất độc hóa học như Agent Orange (Di-ô-xin).</p>
-        <img class="answer-img" src="https://media.healthday.com/Images/icimages/agent_orange310.jpg"/>
-      </div>
-    </div>
-
-    <div id="section42" class="section-container">
-      <h2 class="section-title">Ai là Tổng thống cuối cùng của Việt Nam Cộng hòa trước khi Sài Gòn thất thủ?</h2>
-      <div class="hint-container">
-        <p class="hint">Ông không phải là người kế nhiệm trực tiếp của Tổng thống Nguyễn Văn Thiệu.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Dương Văn Minh.</p>
-        <img class="answer-img" src="https://th.bing.com/th/id/R.6a9992fb06f77d941f1cb0325987a0d9?rik=%2bqPspfiU6elxXQ&riu=http%3a%2f%2fimg.cdn2.vietnamnet.vn%2fImages%2fenglish%2f2012%2f05%2f02%2f16%2f20120502165500_2.gif&ehk=xT2dJslQ3do6b4eIFyesMcHHhn4o5V6QGeB2Whs7sSI%3d&risl=&pid=ImgRaw&r=0"/>
-      </div>
-    </div>
-
-    <div id="section43" class="section-container">
-      <h2 class="section-title">Chiến thắng nào mở đường cho Quân Giải phóng tiến công giải phóng Sài Gòn vào năm 1975?</h2>
-      <div class="hint-container">
-        <p class="hint">Gần biên giới Campuchia</p>
-        <p class="hint">Sự thất thủ của nó đã khiến Quân lực Việt Nam Cộng hòa không thể tái chiếm lại</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Chiến thắng Phước Long (tháng 1 năm 1975).</p>
-        <img class="answer-img" src="https://file3.qdnd.vn/data/images/5/2021/04/22/phucthang/pl111.jpg"/>
-      </div>
-    </div>
-
-    <div id="section44" class="section-container">
-      <h2 class="section-title">Cuộc chiến tranh chống Mỹ tại Việt Nam đã để lại những hệ quả gì về kinh tế, xã hội và chính trị đối với Việt Nam?</h2>
-      <div class="hint-container">
-        <p class="hint">Hãy suy nghĩ về những tổn thất về cơ sở hạ tầng, sản xuất, và việc tái thiết đất nước.</p>
-        <p class="hint">Hậu quả về dân số, với những mất mát nhân mạng và di chứng từ chất độc hóa học.</p>
-        <p class="hint">Sau chiến tranh, Việt Nam đã thống nhất đất nước dưới một chế độ mới.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Chiến tranh tàn phá kinh tế, gây khủng hoảng xã hội, di chứng chất độc da cam, và phân hóa chính trị.</p>
-        <img class="answer-img" src="https://dangbosatra.vn/upload/images/unnamed(1).jpg"/>
-      </div>
-    </div>
-
-    <div id="section45" class="section-container">
-      <h2 class="section-title">Tại sao cuộc Tổng tiến công và nổi dậy Xuân Mậu Thân năm 1968 được coi là một bước ngoặt trong cuộc kháng chiến chống Mỹ?</h2>
-      <div class="hint-container">
-        <p class="hint">Cuộc tấn công lớn vào dịp Tết Nguyên Đán 1968 tại miền Nam đã làm thay đổi dư luận Mỹ và quốc tế, thể hiện sức mạnh kháng chiến.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Tổng tiến công Xuân Mậu Thân 1968 là bước ngoặt, chấn động dư luận, thúc đẩy đàm phán hòa bình và thay đổi chiến lược Mỹ.</p>
-        <img class="answer-img" src="https://live.staticflickr.com/5164/5362273682_c0bd222bd5_b.jpg"/>
-      </div>
-    </div>
-
-    <div id="section46" class="section-container">
-      <h2 class="section-title">Tại sao cuộc Tổng tiến công và nổi dậy Xuân Mậu Thân năm 1968 được coi là một bước ngoặt trong cuộc kháng chiến chống Mỹ?</h2>
-      <div class="hint-container">
-        <p class="hint">Chiến quân sự lớn nhất và cuối cùng của quân đội miền Bắc và lực lượng Giải phóng miền Nam.</p>
-        <p class="hint">mục tiêu giải phóng Sài Gòn và thống nhất đất nước.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Chiến dịch Hồ Chí Minh (1975).</p>
-        <img class="answer-img" src="https://photo-cms-sggp.zadn.vn/w560/Uploaded/2021/ayhusbb/2017_04_30/anh4_sanv.jpg"/>
-      </div>
-    </div>
-
-    <div id="section47" class="section-container">
-      <h2 class="section-title">Hiệp định Paris năm 1973 quy định điều gì quan trọng đối với cuộc kháng chiến chống Mỹ của Việt Nam?</h2>
-      <div class="hint-container">
-        <p class="hint">Hiệp định đã dưa ra một số điều kiện đối với Mỹ và đồng minh</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Hiệp định Paris năm 1973 quy định Mỹ phải rút quân khỏi Việt Nam, lập lại hòa bình ở Việt Nam.</p>
-        <img class="answer-img" src="https://th.bing.com/th/id/R.cfbf80c39c8291009b5549419033c159?rik=2m1t%2b4TnlG4xug&riu=http%3a%2f%2fredsvn.net%2fwp-content%2fuploads%2f2020%2f07%2fMilestones-1954.jpg&ehk=KDfVyOwy2s%2fAARRbhy1eNo%2fs7mnoxjSLm%2fux6l6YOXw%3d&risl=&pid=ImgRaw&r=0"/>
-      </div>
-    </div>
-
-    <div id="section48" class="section-container">
-      <h2 class="section-title">Sự kiện nào được coi là mở đầu cho cuộc kháng chiến chống Mỹ cứu nước của nhân dân Việt Nam?</h2>
-      <div class="hint-container">
-        <p class="hint">Phong trào này bắt đầu vào năm 1959-1960 và thường gắn liền với các cuộc nổi dậy ở Bến Tre.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Phong trào "Đồng khởi" (1959-1960)</p>
-        <img class="answer-img" src="https://vnanet.vn/Data/Articles/2020/01/16/4384706/vna_potal_ky_niem_60_nam_phong_trao_dong_khoi_1711960_-_1712020_huyen_thoai_%E2%80%9Cdoi_quan_toc_dai_ben_tre%E2%80%9D_102350837_stand.jpg"/>
-      </div>
-    </div>
-
-    <div id="section49" class="section-container">
-      <h2 class="section-title">Hiệp định nào đánh dấu sự kết thúc của cuộc kháng chiến chống Pháp và sự chia cắt tạm thời đất nước Việt Nam thành hai miền?</h2>
-      <div class="hint-container">
-        <p class="hint">Được ký vào năm 1954</p>
-        <p class="hint">Sau khi Việt Nam đánh thắng Pháp tại Điện Biên Phủ</p>
-        <p class="hint">Chia cắt hai miền tại vĩ tuyến 17</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Hiệp định Genève</p>
-        <img class="answer-img" src="https://images.hcmcpv.org.vn/res/news/2021/07/15-07-2021-ky-niem-67-nam-ngay-ky-ket-hiep-dinh-geneve-2071954-2072021-thuc-su-ai-da-pha-hoai-hoa-binh-8B9C6941.jpg"/>
-      </div>
-    </div>
-
-    <div id="section50" class="section-container">
-      <h2 class="section-title">Trong cuộc kháng chiến chống Mỹ (1954 - 1975), chiến thắng nào của quân dân miền Nam đã buộc Mĩ phải “phi Mĩ hóa” chiến tranh xâm lược?</h2>
-      <div class="hint-container">
-        <p class="hint">Cuộc tấn công này diễn ra vào năm 1968, trong một dịp lễ truyền thống lớn của Việt Nam, và đã mở màn với những đợt tấn công vào nhiều thành phố lớn, bao gồm cả Sài Gòn.</p>
-      </div>
-      <button class="btn btn-dropdown">Hiện đáp án</button>
-      <div class="answer-container">
-        <p>Thắng lợi của cuộc Tổng tiến công và nổi dậy xuân Mậu Thân năm 1968 buộc Mĩ phải tuyên bố “phi Mĩ hóa” chiến tranh xâm lược.</p>
-        <img class="answer-img" src="https://static.kinhtedothi.vn/w960/images/upload/2021/12/25/xuan-mau-than-1968.jpg"/>
-      </div>
-    </div>
-
-    <!-- Tiếp tục cho đến section 10 -->
-
-
-
-    <script src="js/main.js"></script>
+        function resetApp() {
+            if (confirm('Khôi phục lại mặc định?')) {
+                localStorage.removeItem(STORAGE_KEY);
+                fields = [...defaultFields];
+                saveFieldsToStorage();
+                renderFields();
+                renderTable();
+                document.getElementById('imagePreviewContainer').classList.add('hidden');
+                document.getElementById('placeholderIcon').classList.remove('hidden');
+            }
+        }
+    </script>
 </body>
-
 </html>
