@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quét Phiếu Khảo Sát AI</title>
+    <title>Quét Phiếu Khảo Sát AI (GPT-4o)</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -14,16 +14,19 @@
 </head>
 <body class="bg-gray-100 font-sans text-gray-800 antialiased">
 
+    <!-- Container tối ưu màn hình Mobile -->
     <div class="max-w-md mx-auto min-h-screen bg-white flex flex-col shadow-xl">
         
+        <!-- Header -->
         <header class="bg-blue-600 text-white p-4 sticky top-0 z-20 shadow-md">
-            <h1 class="text-lg font-bold text-center">Quét Phiếu Khảo Sát AI</h1>
-            <p class="text-xs text-blue-100 text-center mt-0.5">Tự động kết nối Google Sheets & GPT-4o</p>
+            <h1 class="text-lg font-bold text-center">Quét Phiếu Khảo Sát AI (GPT-4o)</h1>
+            <p class="text-xs text-blue-100 text-center mt-0.5">Tối ưu đọc chuẩn xác bảng thang điểm</p>
         </header>
 
+        <!-- Nội dung chính -->
         <main id="mainContainer" class="flex-1 p-4 space-y-5 overflow-y-auto pb-24">
             
-            <!-- BƯỚC 1: CẤU HÌNH THÔNG TIN CẦN ĐỌC -->
+            <!-- BƯỚC 1: CẤU HÌNH CÁC THÔNG TIN CẦN ĐỌC -->
             <section class="bg-blue-50/50 border border-blue-200 rounded-xl p-3.5 shadow-sm space-y-3">
                 <div class="flex justify-between items-center border-b border-blue-200 pb-2">
                     <div>
@@ -35,6 +38,7 @@
                     </button>
                 </div>
                 
+                <!-- Danh sách các trường được thêm -->
                 <div id="fieldsContainer" class="space-y-3"></div>
 
                 <button onclick="syncHeadersToSheet()" class="w-full bg-slate-800 hover:bg-slate-900 text-white text-xs py-2 rounded-lg font-medium shadow transition flex items-center justify-center gap-1.5">
@@ -97,6 +101,7 @@
             </button>
         </main>
 
+        <!-- Footer cố định -->
         <footer class="p-3 bg-white border-t border-gray-200 flex justify-end sticky bottom-0 z-10">
             <button onclick="resetApp()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-3.5 py-2.5 rounded-lg font-medium text-xs active:scale-95 transition">
                 Đặt lại ban đầu
@@ -105,26 +110,29 @@
 
     </div>
 
-    <!-- MODAL THÊM TRƯỜNG -->
+    <!-- MODAL CHỌN LOẠI THÔNG TIN MỚI -->
     <div id="addModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
         <div class="bg-white rounded-xl max-w-xs w-full p-4 space-y-3 shadow-2xl">
             <h3 class="font-bold text-sm text-gray-800">Chọn dạng câu hỏi cần thêm</h3>
             <div class="space-y-2">
                 <button onclick="addNewField('radio')" class="w-full text-left p-2.5 border rounded-lg hover:bg-blue-50 hover:border-blue-300 transition text-xs">
                     <div class="font-semibold text-blue-900">🔘 Chọn 1 đáp án (Radio)</div>
+                    <div class="text-[10px] text-gray-500">Ví dụ: Giới tính, Độ tuổi, Tần suất...</div>
                 </button>
                 <button onclick="addNewField('likert')" class="w-full text-left p-2.5 border rounded-lg hover:bg-indigo-50 hover:border-indigo-300 transition text-xs">
                     <div class="font-semibold text-indigo-900">⭐ Thang đo điểm (Likert)</div>
+                    <div class="text-[10px] text-gray-500">Ví dụ: Mức độ hài lòng 1-5 điểm</div>
                 </button>
                 <button onclick="addNewField('text')" class="w-full text-left p-2.5 border rounded-lg hover:bg-emerald-50 hover:border-emerald-300 transition text-xs">
                     <div class="font-semibold text-emerald-900">✏️ Ô nhập chữ (Text)</div>
+                    <div class="text-[10px] text-gray-500">Ví dụ: Ý kiến đóng góp, Họ tên...</div>
                 </button>
             </div>
             <button onclick="hideAddModal()" class="w-full py-2 bg-gray-100 text-gray-600 rounded-lg text-xs font-medium">Hủy</button>
         </div>
     </div>
 
-    <!-- DIALOG CONFIRM -->
+    <!-- DIALOG CONFIRM KẾT QUẢ AI QUÉT (HIỂN THỊ TÊN CÂU HỎI GỐC) -->
     <div id="confirmModal" class="fixed inset-0 bg-black/60 hidden items-center justify-center p-4 z-50 overflow-y-auto">
         <div class="bg-white rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl my-8">
             <div class="border-b pb-3">
@@ -146,10 +154,9 @@
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyyjMIGuislBdf68qbsJdpztztBccBm54cymnurdZc0/dev";
-        const SECRET_TOKEN = "MatKhauBiMatCuaBan_2026_XYZ"; 
-
-        const STORAGE_KEY = 'SURVEY_SCHEMA_FIELDS_HARDCODED_V2';
+        const OPENAI_API_KEY = "__OPENAI_API_KEY__";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyzwLGsYvHa_sYeOSLCTTrzmqDGqGKCwgSZEDyjd64hGXK9Q-SdqOOgZppUHmpcDdgaRQ/exec";
+        const STORAGE_KEY = 'SURVEY_SCHEMA_FIELDS_GPT4O_V2';
 
         const defaultFields = [
             { id: 'ho_ten', type: 'text', prompt: 'Họ tên khách hàng' },
@@ -186,6 +193,7 @@
         function renderFields() {
             const container = document.getElementById('fieldsContainer');
             container.innerHTML = '';
+
             fields.forEach((field, index) => {
                 const card = document.createElement('div');
                 card.className = "field-card bg-white p-3 border border-gray-200 rounded-lg shadow-sm space-y-2 text-xs relative";
@@ -340,50 +348,85 @@
             }
         }
 
-        // ĐỒNG BỘ CỘT VỚI GOOGLE SHEETS (Dùng text/plain để tránh lỗi Preflight CORS)
+        // INSERT / CẬP NHẬT TÊN CỘT VÀO EXCEL
         async function syncHeadersToSheet() {
             try {
                 const headersList = fields.map(f => f.id);
-                
                 await fetch(SCRIPT_URL, {
                     method: "POST",
-                    headers: { "Content-Type": "text/plain;charset=utf-8" },
-                    body: JSON.stringify({ 
-                        token: SECRET_TOKEN,
-                        action: "ensureHeaders", 
-                        fields: headersList 
-                    })
+                    mode: "no-cors",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ action: "ensureHeaders", fields: headersList })
                 });
-                alert("✅ Đã cập nhật tên cột thành công vào Excel!");
+                alert("✅ Đã insert/cập nhật tên các cột thành công vào hàng đầu tiên của Excel!");
             } catch (err) {
-                alert("Lỗi: " + err.message);
+                alert("Lỗi đồng bộ: " + err.message);
             }
         }
 
-        // QUÉT ẢNH BẰNG AI (Dùng text/plain để tránh lỗi Preflight CORS)
+        // QUÉT ẢNH BẰNG MODEL GPT-4O VỚI PROMPT ĐỊNH HƯỚNG TỌA ĐỘ LƯỚI CHUẨN XÁC
         async function scanImageWithOpenAI() {
             if (!currentBase64Image) return alert("Vui lòng chụp hoặc chọn ảnh phiếu khảo sát trước!");
 
             const btnScan = document.getElementById('btnScan');
-            btnScan.innerText = "⏳ AI đang phân tích phiếu...";
+            btnScan.innerText = "⏳ GPT-4o đang phân tích chi tiết...";
             btnScan.disabled = true;
 
+            const schemaPrompt = fields.map(f => {
+                let extra = "";
+                if (f.type === 'radio' && f.options) {
+                    extra = ` (Các lựa chọn & giá trị quy đổi: ${JSON.stringify(f.options)})`;
+                } else if (f.type === 'likert') {
+                    extra = ` (Đây là thang điểm Likert từ ${f.minScale} đến ${f.maxScale}. Bảng có các cột số 1, 2, 3, 4, 5. Hãy dóng thẳng hàng ngang từ tiêu chí này sang bên phải để xem dấu tích ✓ hoặc ✔ nằm ở chính xác cột số mấy)`;
+                }
+                return `- Mã trường: "${f.id}", Tên câu hỏi gốc: "${f.prompt}"${extra}`;
+            }).join("\n");
+
+            const systemPrompt = `Bạn là hệ thống OCR chuyên phân tích biểu mẫu khảo sát giấy.
+Nhiệm vụ: Trích xuất thông tin từ hình ảnh theo đúng danh sách các trường sau:
+${schemaPrompt}
+
+QUY TẮC ĐỌC ĐẶC BIỆT ĐỂ ĐẢM BẢO CHÍNH XÁC TUYỆT ĐỐI:
+1. Đối với trắc nghiệm: Tìm ký hiệu [X], [x], X, x, ✓, ✔. Trả về giá trị quy đổi tương ứng. Không chọn thì trả về "".
+2. Đối với bảng thang điểm Likert (Phần III - Ý kiến đóng góp): Cực kỳ lưu ý phải đọc từng hàng độc lập. Dóng đường kẻ ngang từ tên từng tiêu chí (ví dụ: Vị trí quán, Chất lượng nước, Không gian vệ sinh) sang phải để xác định đúng dấu tích nằm ở cột số mấy (1, 2, 3, 4 hoặc 5), tránh bị lệch hàng. Trả về đúng con số của cột đó (ví dụ: "5", "3", "2").
+3. Đối với ô chữ viết tay: Đọc kỹ từng từ tiếng Việt viết tay.
+
+Bắt buộc trả về duy nhất một chuỗi JSON thuần túy (không kèm markdown ngoài JSON):
+{
+  "Mã_trường_1": "Giá_trị",
+  "Mã_trường_2": "Giá_trị"
+}`;
+
             try {
-                const response = await fetch(SCRIPT_URL, {
+                const response = await fetch("https://api.openai.com/v1/chat/completions", {
                     method: "POST",
-                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${OPENAI_API_KEY}`
+                    },
                     body: JSON.stringify({
-                        token: SECRET_TOKEN,
-                        action: "scanImage",
-                        fields: fields,
-                        image: currentBase64Image
+                        model: "gpt-4o",
+                        response_format: { type: "json_object" },
+                        messages: [
+                            {
+                                role: "user",
+                                content: [
+                                    { type: "text", text: systemPrompt },
+                                    { type: "image_url", image_url: { url: currentBase64Image } }
+                                ]
+                            }
+                        ],
+                        max_tokens: 1500,
+                        temperature: 0.0 // Đặt nhiệt độ bằng 0 để AI trả về kết quả nhất quán và chính xác nhất
                     })
                 });
 
                 const resData = await response.json();
-                if (resData.status === "error") throw new Error(resData.message);
+                if (resData.error) throw new Error(resData.error.message);
 
-                currentExtractedData = resData.data;
+                const rawJson = resData.choices[0].message.content;
+                currentExtractedData = JSON.parse(rawJson);
+
                 showConfirmModal(currentExtractedData);
 
             } catch (err) {
@@ -394,6 +437,7 @@
             }
         }
 
+        // HIỂN THỊ DIALOG CONFIRM VỚI TÊN CÂU HỎI GỐC (PROMPT)
         function showConfirmModal(extractedData) {
             const container = document.getElementById('confirmTableContainer');
             container.innerHTML = '';
@@ -420,30 +464,31 @@
             document.getElementById('confirmModal').classList.remove('flex');
         }
 
+        // LƯU VÀO GOOGLE SHEETS (VỊ TRÍ INSERT LUÔN NẰM DƯỚI HÀNG DỮ LIỆU CUỐI CÙNG)
         async function confirmAndSaveToSheet() {
             const btnSave = document.getElementById('btnSaveToSheet');
             btnSave.innerText = "⏳ Đang lưu...";
             btnSave.disabled = true;
 
             const confirmInputs = document.querySelectorAll('.confirm-input');
-            const rowData = [new Date().toLocaleString("vi-VN")];
+            const rowData = [new Date().toLocaleString("vi-VN")]; // Cột 1 là thời gian quét
 
-            confirmInputs.forEach(input => rowData.push(input.value));
+            confirmInputs.forEach(input => {
+                rowData.push(input.value);
+            });
 
             try {
                 await fetch(SCRIPT_URL, {
                     method: "POST",
-                    headers: { "Content-Type": "text/plain;charset=utf-8" },
-                    body: JSON.stringify({
-                        token: SECRET_TOKEN,
-                        action: "addRow",
-                        rowData: rowData
-                    })
+                    mode: "no-cors",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ action: "addRow", rowData: rowData })
                 });
 
-                alert("✅ Đã chèn dữ liệu mới thành công vào dưới cùng của Excel Online!");
+                alert("✅ Đã chèn dữ liệu mới thành công vào ngay dưới hàng có dữ liệu cuối cùng trong Excel Online!");
                 hideConfirmModal();
                 
+                // Reset ảnh sau khi lưu xong
                 document.getElementById('imagePreviewContainer').classList.add('hidden');
                 document.getElementById('placeholderIcon').classList.remove('hidden');
                 currentBase64Image = "";
@@ -457,7 +502,7 @@
         }
 
         function resetApp() {
-            if (confirm('Khôi phục lại mặc định?')) {
+            if (confirm('Bạn có chắc chắn muốn khôi phục lại mặc định không?')) {
                 localStorage.removeItem(STORAGE_KEY);
                 fields = [...defaultFields];
                 saveFieldsToStorage();
